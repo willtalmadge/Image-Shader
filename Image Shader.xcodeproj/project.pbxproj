@@ -1,0 +1,677 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C907B5B9190E246B00001978 /* ViewControllerOld in Resources */ = {isa = PBXBuildFile; fileRef = C907B5B8190E246B00001978 /* ViewControllerOld */; };
+		C91D3FAE195DB1CE00F47B78 /* cyberpunk.png in Resources */ = {isa = PBXBuildFile; fileRef = C91D3FAD195DB1CE00F47B78 /* cyberpunk.png */; };
+		C91D3FB719612DE900F47B78 /* FFTInterleaveToFt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C91D3FB519612DE900F47B78 /* FFTInterleaveToFt.cpp */; };
+		C91D3FBA19612E0B00F47B78 /* FFTInterleaveToFtNdc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C91D3FB819612E0B00F47B78 /* FFTInterleaveToFtNdc.cpp */; };
+		C924647319456A8000E4BBEE /* Macro.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C924647119456A8000E4BBEE /* Macro.cpp */; };
+		C92ADD371919678A003F4EEA /* texture_map.fsh in Resources */ = {isa = PBXBuildFile; fileRef = C92ADD361919678A003F4EEA /* texture_map.fsh */; };
+		C92ADD3919196A0C003F4EEA /* ortho_texture.vsh in Resources */ = {isa = PBXBuildFile; fileRef = C92ADD3819196A0C003F4EEA /* ortho_texture.vsh */; };
+		C92BA53019049DCA00CD3821 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C92BA52F19049DCA00CD3821 /* Foundation.framework */; };
+		C92BA53219049DCA00CD3821 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C92BA53119049DCA00CD3821 /* CoreGraphics.framework */; };
+		C92BA53419049DCA00CD3821 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C92BA53319049DCA00CD3821 /* UIKit.framework */; };
+		C92BA53A19049DCA00CD3821 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C92BA53819049DCA00CD3821 /* InfoPlist.strings */; };
+		C92BA53C19049DCA00CD3821 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C92BA53B19049DCA00CD3821 /* main.m */; };
+		C92BA54019049DCA00CD3821 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C92BA53F19049DCA00CD3821 /* AppDelegate.m */; };
+		C92BA54319049DCA00CD3821 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C92BA54119049DCA00CD3821 /* Main.storyboard */; };
+		C92BA54819049DCA00CD3821 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C92BA54719049DCA00CD3821 /* Images.xcassets */; };
+		C92BA54F19049DCA00CD3821 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C92BA54E19049DCA00CD3821 /* XCTest.framework */; };
+		C92BA55019049DCA00CD3821 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C92BA52F19049DCA00CD3821 /* Foundation.framework */; };
+		C92BA55119049DCA00CD3821 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C92BA53319049DCA00CD3821 /* UIKit.framework */; };
+		C92BA55919049DCA00CD3821 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C92BA55719049DCA00CD3821 /* InfoPlist.strings */; };
+		C92BA55B19049DCA00CD3821 /* Image_ShaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C92BA55A19049DCA00CD3821 /* Image_ShaderTests.m */; };
+		C92BA5661904A7C000CD3821 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C92BA5641904A7C000CD3821 /* GLKit.framework */; };
+		C92BA5671904A7C000CD3821 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C92BA5651904A7C000CD3821 /* OpenGLES.framework */; };
+		C94B82781904ECCB006A3A6D /* passThrough.vsh in Resources */ = {isa = PBXBuildFile; fileRef = C94B82771904ECCB006A3A6D /* passThrough.vsh */; };
+		C94B827A1904ED35006A3A6D /* blue.fsh in Resources */ = {isa = PBXBuildFile; fileRef = C94B82791904ED35006A3A6D /* blue.fsh */; };
+		C94B827C19062B74006A3A6D /* chateu.png in Resources */ = {isa = PBXBuildFile; fileRef = C94B827B19062B74006A3A6D /* chateu.png */; };
+		C9502D35193BE82C0075652D /* ISTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9502D33193BE82C0075652D /* ISTexture.cpp */; };
+		C9502D38193BE83C0075652D /* ISTextureTuple.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9502D36193BE83C0075652D /* ISTextureTuple.cpp */; };
+		C9502D3B1940353C0075652D /* ISPassThroughDrawable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9502D391940353C0075652D /* ISPassThroughDrawable.cpp */; };
+		C9502D3E1940367F0075652D /* ISSingleton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9502D3C1940367F0075652D /* ISSingleton.cpp */; };
+		C9502D411940F9020075652D /* ISShaderProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9502D3F1940F9020075652D /* ISShaderProgram.cpp */; };
+		C9502D4519418A250075652D /* ISVertexArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9502D4319418A250075652D /* ISVertexArray.cpp */; };
+		C9502D49194396150075652D /* ISPassThrough.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9502D47194396150075652D /* ISPassThrough.cpp */; };
+		C96528811910355900037819 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C92BA54519049DCA00CD3821 /* ViewController.mm */; };
+		C96528831910BF6F00037819 /* street.png in Resources */ = {isa = PBXBuildFile; fileRef = C96528821910BF6F00037819 /* street.png */; };
+		C96676861932FEF100F633DC /* ISPipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C96676841932FEF100F633DC /* ISPipeline.cpp */; };
+		C96C04FE194CE16400328686 /* ISComplex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C96C04FC194CE16400328686 /* ISComplex.cpp */; };
+		C96C050419516B5000328686 /* FFTSubBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C96C050219516B5000328686 /* FFTSubBlock.cpp */; };
+		C9A4471C19628DBF008305DF /* FFTPhaseTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A4471A19628DBF008305DF /* FFTPhaseTable.cpp */; };
+		C9A4471F19633DC4008305DF /* FFTFtToInterleave.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A4471D19633DC4008305DF /* FFTFtToInterleave.cpp */; };
+		C9A4472219650DED008305DF /* FFTFtToInterleaveDC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A4472019650DED008305DF /* FFTFtToInterleaveDC.cpp */; };
+		C9A4472519664E57008305DF /* FFTRealTransform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A4472319664E57008305DF /* FFTRealTransform.cpp */; };
+		C9A4472819664E6C008305DF /* FFTRealTransformNDC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A4472619664E6C008305DF /* FFTRealTransformNDC.cpp */; };
+		C9AEF451194A937900079299 /* FFTPermute.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9AEF44F194A937900079299 /* FFTPermute.cpp */; };
+		C9BC08CE1927E7C900587377 /* page.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C9BC08CD1927E7C900587377 /* page.jpg */; };
+		C9DDC3501935A510003E59C4 /* ISDrawable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9DDC34E1935A510003E59C4 /* ISDrawable.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C92BA55219049DCA00CD3821 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C92BA52419049DCA00CD3821 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C92BA52B19049DCA00CD3821;
+			remoteInfo = "Image Shader";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		C907B5B8190E246B00001978 /* ViewControllerOld */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ViewControllerOld; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		C91D3FAD195DB1CE00F47B78 /* cyberpunk.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cyberpunk.png; path = ../cyberpunk.png; sourceTree = "<group>"; };
+		C91D3FB519612DE900F47B78 /* FFTInterleaveToFt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTInterleaveToFt.cpp; sourceTree = "<group>"; };
+		C91D3FB619612DE900F47B78 /* FFTInterleaveToFt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTInterleaveToFt.h; sourceTree = "<group>"; };
+		C91D3FB819612E0B00F47B78 /* FFTInterleaveToFtNdc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTInterleaveToFtNdc.cpp; sourceTree = "<group>"; };
+		C91D3FB919612E0B00F47B78 /* FFTInterleaveToFtNdc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTInterleaveToFtNdc.h; sourceTree = "<group>"; };
+		C924647119456A8000E4BBEE /* Macro.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Macro.cpp; sourceTree = "<group>"; };
+		C924647219456A8000E4BBEE /* Macro.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Macro.hpp; sourceTree = "<group>"; };
+		C92ADD361919678A003F4EEA /* texture_map.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = texture_map.fsh; sourceTree = "<group>"; };
+		C92ADD3819196A0C003F4EEA /* ortho_texture.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = ortho_texture.vsh; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.glsl; };
+		C92BA52C19049DCA00CD3821 /* Image Shader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Image Shader.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C92BA52F19049DCA00CD3821 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		C92BA53119049DCA00CD3821 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		C92BA53319049DCA00CD3821 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		C92BA53719049DCA00CD3821 /* Image Shader-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Image Shader-Info.plist"; sourceTree = "<group>"; };
+		C92BA53919049DCA00CD3821 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		C92BA53B19049DCA00CD3821 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		C92BA53D19049DCA00CD3821 /* Image Shader-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Image Shader-Prefix.pch"; sourceTree = "<group>"; };
+		C92BA53E19049DCA00CD3821 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		C92BA53F19049DCA00CD3821 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		C92BA54219049DCA00CD3821 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		C92BA54419049DCA00CD3821 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		C92BA54519049DCA00CD3821 /* ViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = ViewController.mm; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		C92BA54719049DCA00CD3821 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		C92BA54D19049DCA00CD3821 /* Image ShaderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Image ShaderTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C92BA54E19049DCA00CD3821 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		C92BA55619049DCA00CD3821 /* Image ShaderTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Image ShaderTests-Info.plist"; sourceTree = "<group>"; };
+		C92BA55819049DCA00CD3821 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		C92BA55A19049DCA00CD3821 /* Image_ShaderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Image_ShaderTests.m; sourceTree = "<group>"; };
+		C92BA5641904A7C000CD3821 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
+		C92BA5651904A7C000CD3821 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		C94B82771904ECCB006A3A6D /* passThrough.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = passThrough.vsh; path = ../passThrough.vsh; sourceTree = "<group>"; };
+		C94B82791904ED35006A3A6D /* blue.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = blue.fsh; sourceTree = "<group>"; };
+		C94B827B19062B74006A3A6D /* chateu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chateu.png; sourceTree = "<group>"; };
+		C9502D33193BE82C0075652D /* ISTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ISTexture.cpp; sourceTree = "<group>"; };
+		C9502D34193BE82C0075652D /* ISTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISTexture.h; sourceTree = "<group>"; };
+		C9502D36193BE83C0075652D /* ISTextureTuple.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ISTextureTuple.cpp; sourceTree = "<group>"; };
+		C9502D37193BE83C0075652D /* ISTextureTuple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISTextureTuple.h; sourceTree = "<group>"; };
+		C9502D391940353C0075652D /* ISPassThroughDrawable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ISPassThroughDrawable.cpp; sourceTree = "<group>"; };
+		C9502D3A1940353C0075652D /* ISPassThroughDrawable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISPassThroughDrawable.h; sourceTree = "<group>"; };
+		C9502D3C1940367F0075652D /* ISSingleton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ISSingleton.cpp; sourceTree = "<group>"; };
+		C9502D3D1940367F0075652D /* ISSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISSingleton.h; sourceTree = "<group>"; };
+		C9502D3F1940F9020075652D /* ISShaderProgram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ISShaderProgram.cpp; sourceTree = "<group>"; };
+		C9502D401940F9020075652D /* ISShaderProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISShaderProgram.h; sourceTree = "<group>"; };
+		C9502D4319418A250075652D /* ISVertexArray.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ISVertexArray.cpp; sourceTree = "<group>"; };
+		C9502D4419418A250075652D /* ISVertexArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISVertexArray.h; sourceTree = "<group>"; };
+		C9502D47194396150075652D /* ISPassThrough.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ISPassThrough.cpp; sourceTree = "<group>"; };
+		C9502D48194396150075652D /* ISPassThrough.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISPassThrough.h; sourceTree = "<group>"; };
+		C96528821910BF6F00037819 /* street.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = street.png; sourceTree = "<group>"; };
+		C96676841932FEF100F633DC /* ISPipeline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = ISPipeline.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
+		C96676851932FEF100F633DC /* ISPipeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ISPipeline.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		C96C04FC194CE16400328686 /* ISComplex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ISComplex.cpp; sourceTree = "<group>"; };
+		C96C04FD194CE16400328686 /* ISComplex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISComplex.h; sourceTree = "<group>"; };
+		C96C050219516B5000328686 /* FFTSubBlock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTSubBlock.cpp; sourceTree = "<group>"; };
+		C96C050319516B5000328686 /* FFTSubBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTSubBlock.h; sourceTree = "<group>"; };
+		C9A4471A19628DBF008305DF /* FFTPhaseTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTPhaseTable.cpp; sourceTree = "<group>"; };
+		C9A4471B19628DBF008305DF /* FFTPhaseTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTPhaseTable.h; sourceTree = "<group>"; };
+		C9A4471D19633DC4008305DF /* FFTFtToInterleave.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTFtToInterleave.cpp; sourceTree = "<group>"; };
+		C9A4471E19633DC4008305DF /* FFTFtToInterleave.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTFtToInterleave.h; sourceTree = "<group>"; };
+		C9A4472019650DED008305DF /* FFTFtToInterleaveDC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTFtToInterleaveDC.cpp; sourceTree = "<group>"; };
+		C9A4472119650DED008305DF /* FFTFtToInterleaveDC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTFtToInterleaveDC.h; sourceTree = "<group>"; };
+		C9A4472319664E57008305DF /* FFTRealTransform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTRealTransform.cpp; sourceTree = "<group>"; };
+		C9A4472419664E57008305DF /* FFTRealTransform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTRealTransform.h; sourceTree = "<group>"; };
+		C9A4472619664E6C008305DF /* FFTRealTransformNDC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTRealTransformNDC.cpp; sourceTree = "<group>"; };
+		C9A4472719664E6C008305DF /* FFTRealTransformNDC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTRealTransformNDC.h; sourceTree = "<group>"; };
+		C9AEF44F194A937900079299 /* FFTPermute.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTPermute.cpp; sourceTree = "<group>"; };
+		C9AEF450194A937900079299 /* FFTPermute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTPermute.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
+		C9BC08CD1927E7C900587377 /* page.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = page.jpg; sourceTree = "<group>"; };
+		C9DDC34E1935A510003E59C4 /* ISDrawable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ISDrawable.cpp; sourceTree = "<group>"; };
+		C9DDC34F1935A510003E59C4 /* ISDrawable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISDrawable.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C92BA52919049DCA00CD3821 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C92BA53219049DCA00CD3821 /* CoreGraphics.framework in Frameworks */,
+				C92BA5661904A7C000CD3821 /* GLKit.framework in Frameworks */,
+				C92BA5671904A7C000CD3821 /* OpenGLES.framework in Frameworks */,
+				C92BA53419049DCA00CD3821 /* UIKit.framework in Frameworks */,
+				C92BA53019049DCA00CD3821 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C92BA54A19049DCA00CD3821 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C92BA54F19049DCA00CD3821 /* XCTest.framework in Frameworks */,
+				C92BA55119049DCA00CD3821 /* UIKit.framework in Frameworks */,
+				C92BA55019049DCA00CD3821 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C91D3FB419612D7C00F47B78 /* FFT */ = {
+			isa = PBXGroup;
+			children = (
+				C9AEF44F194A937900079299 /* FFTPermute.cpp */,
+				C9AEF450194A937900079299 /* FFTPermute.h */,
+				C96C050219516B5000328686 /* FFTSubBlock.cpp */,
+				C96C050319516B5000328686 /* FFTSubBlock.h */,
+				C91D3FB619612DE900F47B78 /* FFTInterleaveToFt.h */,
+				C91D3FB519612DE900F47B78 /* FFTInterleaveToFt.cpp */,
+				C91D3FB919612E0B00F47B78 /* FFTInterleaveToFtNdc.h */,
+				C91D3FB819612E0B00F47B78 /* FFTInterleaveToFtNdc.cpp */,
+				C9A4471E19633DC4008305DF /* FFTFtToInterleave.h */,
+				C9A4471D19633DC4008305DF /* FFTFtToInterleave.cpp */,
+				C9A4472119650DED008305DF /* FFTFtToInterleaveDC.h */,
+				C9A4472019650DED008305DF /* FFTFtToInterleaveDC.cpp */,
+				C9A4471A19628DBF008305DF /* FFTPhaseTable.cpp */,
+				C9A4471B19628DBF008305DF /* FFTPhaseTable.h */,
+				C9A4472419664E57008305DF /* FFTRealTransform.h */,
+				C9A4472319664E57008305DF /* FFTRealTransform.cpp */,
+				C9A4472719664E6C008305DF /* FFTRealTransformNDC.h */,
+				C9A4472619664E6C008305DF /* FFTRealTransformNDC.cpp */,
+			);
+			name = FFT;
+			sourceTree = "<group>";
+		};
+		C92BA52319049DCA00CD3821 = {
+			isa = PBXGroup;
+			children = (
+				C92BA53519049DCA00CD3821 /* Image Shader */,
+				C92BA55419049DCA00CD3821 /* Image ShaderTests */,
+				C92BA52E19049DCA00CD3821 /* Frameworks */,
+				C92BA52D19049DCA00CD3821 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C92BA52D19049DCA00CD3821 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C92BA52C19049DCA00CD3821 /* Image Shader.app */,
+				C92BA54D19049DCA00CD3821 /* Image ShaderTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C92BA52E19049DCA00CD3821 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C92BA5641904A7C000CD3821 /* GLKit.framework */,
+				C92BA5651904A7C000CD3821 /* OpenGLES.framework */,
+				C92BA52F19049DCA00CD3821 /* Foundation.framework */,
+				C92BA53119049DCA00CD3821 /* CoreGraphics.framework */,
+				C92BA53319049DCA00CD3821 /* UIKit.framework */,
+				C92BA54E19049DCA00CD3821 /* XCTest.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C92BA53519049DCA00CD3821 /* Image Shader */ = {
+			isa = PBXGroup;
+			children = (
+				C9502D32193BE7E30075652D /* Image Shader */,
+				C9BC08CD1927E7C900587377 /* page.jpg */,
+				C91D3FAD195DB1CE00F47B78 /* cyberpunk.png */,
+				C924647119456A8000E4BBEE /* Macro.cpp */,
+				C924647219456A8000E4BBEE /* Macro.hpp */,
+				C96528821910BF6F00037819 /* street.png */,
+				C94B827B19062B74006A3A6D /* chateu.png */,
+				C94B82771904ECCB006A3A6D /* passThrough.vsh */,
+				C94B82791904ED35006A3A6D /* blue.fsh */,
+				C92ADD3819196A0C003F4EEA /* ortho_texture.vsh */,
+				C92ADD361919678A003F4EEA /* texture_map.fsh */,
+				C92BA53E19049DCA00CD3821 /* AppDelegate.h */,
+				C92BA53F19049DCA00CD3821 /* AppDelegate.m */,
+				C92BA54119049DCA00CD3821 /* Main.storyboard */,
+				C92BA54419049DCA00CD3821 /* ViewController.h */,
+				C92BA54519049DCA00CD3821 /* ViewController.mm */,
+				C907B5B8190E246B00001978 /* ViewControllerOld */,
+				C92BA54719049DCA00CD3821 /* Images.xcassets */,
+				C92BA53619049DCA00CD3821 /* Supporting Files */,
+			);
+			path = "Image Shader";
+			sourceTree = "<group>";
+		};
+		C92BA53619049DCA00CD3821 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				C92BA53719049DCA00CD3821 /* Image Shader-Info.plist */,
+				C92BA53819049DCA00CD3821 /* InfoPlist.strings */,
+				C92BA53B19049DCA00CD3821 /* main.m */,
+				C92BA53D19049DCA00CD3821 /* Image Shader-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		C92BA55419049DCA00CD3821 /* Image ShaderTests */ = {
+			isa = PBXGroup;
+			children = (
+				C92BA55A19049DCA00CD3821 /* Image_ShaderTests.m */,
+				C92BA55519049DCA00CD3821 /* Supporting Files */,
+			);
+			path = "Image ShaderTests";
+			sourceTree = "<group>";
+		};
+		C92BA55519049DCA00CD3821 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				C92BA55619049DCA00CD3821 /* Image ShaderTests-Info.plist */,
+				C92BA55719049DCA00CD3821 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		C9502D32193BE7E30075652D /* Image Shader */ = {
+			isa = PBXGroup;
+			children = (
+				C96C04FB194CDF1A00328686 /* Tuples */,
+				C9502D46194396020075652D /* ImageShaders */,
+				C9502D42194186820075652D /* Drawable */,
+				C96676851932FEF100F633DC /* ISPipeline.h */,
+				C96676841932FEF100F633DC /* ISPipeline.cpp */,
+				C9502D34193BE82C0075652D /* ISTexture.h */,
+				C9502D33193BE82C0075652D /* ISTexture.cpp */,
+				C9502D401940F9020075652D /* ISShaderProgram.h */,
+				C9502D3F1940F9020075652D /* ISShaderProgram.cpp */,
+				C9502D4419418A250075652D /* ISVertexArray.h */,
+				C9502D4319418A250075652D /* ISVertexArray.cpp */,
+			);
+			name = "Image Shader";
+			sourceTree = "<group>";
+		};
+		C9502D42194186820075652D /* Drawable */ = {
+			isa = PBXGroup;
+			children = (
+				C91D3FB419612D7C00F47B78 /* FFT */,
+				C9DDC34F1935A510003E59C4 /* ISDrawable.h */,
+				C9DDC34E1935A510003E59C4 /* ISDrawable.cpp */,
+				C9502D3A1940353C0075652D /* ISPassThroughDrawable.h */,
+				C9502D391940353C0075652D /* ISPassThroughDrawable.cpp */,
+			);
+			name = Drawable;
+			sourceTree = "<group>";
+		};
+		C9502D46194396020075652D /* ImageShaders */ = {
+			isa = PBXGroup;
+			children = (
+				C9502D48194396150075652D /* ISPassThrough.h */,
+				C9502D47194396150075652D /* ISPassThrough.cpp */,
+			);
+			name = ImageShaders;
+			sourceTree = "<group>";
+		};
+		C96C04FB194CDF1A00328686 /* Tuples */ = {
+			isa = PBXGroup;
+			children = (
+				C9502D3D1940367F0075652D /* ISSingleton.h */,
+				C9502D3C1940367F0075652D /* ISSingleton.cpp */,
+				C9502D37193BE83C0075652D /* ISTextureTuple.h */,
+				C9502D36193BE83C0075652D /* ISTextureTuple.cpp */,
+				C96C04FD194CE16400328686 /* ISComplex.h */,
+				C96C04FC194CE16400328686 /* ISComplex.cpp */,
+			);
+			name = Tuples;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C92BA52B19049DCA00CD3821 /* Image Shader */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C92BA55E19049DCA00CD3821 /* Build configuration list for PBXNativeTarget "Image Shader" */;
+			buildPhases = (
+				C92BA52819049DCA00CD3821 /* Sources */,
+				C92BA52919049DCA00CD3821 /* Frameworks */,
+				C92BA52A19049DCA00CD3821 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Image Shader";
+			productName = "Image Shader";
+			productReference = C92BA52C19049DCA00CD3821 /* Image Shader.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C92BA54C19049DCA00CD3821 /* Image ShaderTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C92BA56119049DCA00CD3821 /* Build configuration list for PBXNativeTarget "Image ShaderTests" */;
+			buildPhases = (
+				C92BA54919049DCA00CD3821 /* Sources */,
+				C92BA54A19049DCA00CD3821 /* Frameworks */,
+				C92BA54B19049DCA00CD3821 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C92BA55319049DCA00CD3821 /* PBXTargetDependency */,
+			);
+			name = "Image ShaderTests";
+			productName = "Image ShaderTests";
+			productReference = C92BA54D19049DCA00CD3821 /* Image ShaderTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C92BA52419049DCA00CD3821 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0510;
+				ORGANIZATIONNAME = "William Talmadge";
+				TargetAttributes = {
+					C92BA54C19049DCA00CD3821 = {
+						TestTargetID = C92BA52B19049DCA00CD3821;
+					};
+				};
+			};
+			buildConfigurationList = C92BA52719049DCA00CD3821 /* Build configuration list for PBXProject "Image Shader" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = C92BA52319049DCA00CD3821;
+			productRefGroup = C92BA52D19049DCA00CD3821 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C92BA52B19049DCA00CD3821 /* Image Shader */,
+				C92BA54C19049DCA00CD3821 /* Image ShaderTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C92BA52A19049DCA00CD3821 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C92ADD371919678A003F4EEA /* texture_map.fsh in Resources */,
+				C9BC08CE1927E7C900587377 /* page.jpg in Resources */,
+				C92BA54819049DCA00CD3821 /* Images.xcassets in Resources */,
+				C91D3FAE195DB1CE00F47B78 /* cyberpunk.png in Resources */,
+				C94B827C19062B74006A3A6D /* chateu.png in Resources */,
+				C92BA53A19049DCA00CD3821 /* InfoPlist.strings in Resources */,
+				C94B82781904ECCB006A3A6D /* passThrough.vsh in Resources */,
+				C96528831910BF6F00037819 /* street.png in Resources */,
+				C94B827A1904ED35006A3A6D /* blue.fsh in Resources */,
+				C92ADD3919196A0C003F4EEA /* ortho_texture.vsh in Resources */,
+				C92BA54319049DCA00CD3821 /* Main.storyboard in Resources */,
+				C907B5B9190E246B00001978 /* ViewControllerOld in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C92BA54B19049DCA00CD3821 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C92BA55919049DCA00CD3821 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C92BA52819049DCA00CD3821 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C9502D3B1940353C0075652D /* ISPassThroughDrawable.cpp in Sources */,
+				C9A4472519664E57008305DF /* FFTRealTransform.cpp in Sources */,
+				C96528811910355900037819 /* ViewController.mm in Sources */,
+				C9A4471C19628DBF008305DF /* FFTPhaseTable.cpp in Sources */,
+				C9AEF451194A937900079299 /* FFTPermute.cpp in Sources */,
+				C91D3FB719612DE900F47B78 /* FFTInterleaveToFt.cpp in Sources */,
+				C9502D35193BE82C0075652D /* ISTexture.cpp in Sources */,
+				C96C04FE194CE16400328686 /* ISComplex.cpp in Sources */,
+				C9502D411940F9020075652D /* ISShaderProgram.cpp in Sources */,
+				C9502D4519418A250075652D /* ISVertexArray.cpp in Sources */,
+				C96676861932FEF100F633DC /* ISPipeline.cpp in Sources */,
+				C9DDC3501935A510003E59C4 /* ISDrawable.cpp in Sources */,
+				C91D3FBA19612E0B00F47B78 /* FFTInterleaveToFtNdc.cpp in Sources */,
+				C92BA54019049DCA00CD3821 /* AppDelegate.m in Sources */,
+				C924647319456A8000E4BBEE /* Macro.cpp in Sources */,
+				C9A4472219650DED008305DF /* FFTFtToInterleaveDC.cpp in Sources */,
+				C9A4471F19633DC4008305DF /* FFTFtToInterleave.cpp in Sources */,
+				C92BA53C19049DCA00CD3821 /* main.m in Sources */,
+				C9502D49194396150075652D /* ISPassThrough.cpp in Sources */,
+				C9502D38193BE83C0075652D /* ISTextureTuple.cpp in Sources */,
+				C9502D3E1940367F0075652D /* ISSingleton.cpp in Sources */,
+				C96C050419516B5000328686 /* FFTSubBlock.cpp in Sources */,
+				C9A4472819664E6C008305DF /* FFTRealTransformNDC.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C92BA54919049DCA00CD3821 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C92BA55B19049DCA00CD3821 /* Image_ShaderTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C92BA55319049DCA00CD3821 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C92BA52B19049DCA00CD3821 /* Image Shader */;
+			targetProxy = C92BA55219049DCA00CD3821 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		C92BA53819049DCA00CD3821 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C92BA53919049DCA00CD3821 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		C92BA54119049DCA00CD3821 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C92BA54219049DCA00CD3821 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		C92BA55719049DCA00CD3821 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C92BA55819049DCA00CD3821 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		C92BA55C19049DCA00CD3821 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		C92BA55D19049DCA00CD3821 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C92BA55F19049DCA00CD3821 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Image Shader/Image Shader-Prefix.pch";
+				INFOPLIST_FILE = "Image Shader/Image Shader-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		C92BA56019049DCA00CD3821 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Image Shader/Image Shader-Prefix.pch";
+				INFOPLIST_FILE = "Image Shader/Image Shader-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		C92BA56219049DCA00CD3821 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Image Shader.app/Image Shader";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Image Shader/Image Shader-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "Image ShaderTests/Image ShaderTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		C92BA56319049DCA00CD3821 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Image Shader.app/Image Shader";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Image Shader/Image Shader-Prefix.pch";
+				INFOPLIST_FILE = "Image ShaderTests/Image ShaderTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C92BA52719049DCA00CD3821 /* Build configuration list for PBXProject "Image Shader" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C92BA55C19049DCA00CD3821 /* Debug */,
+				C92BA55D19049DCA00CD3821 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C92BA55E19049DCA00CD3821 /* Build configuration list for PBXNativeTarget "Image Shader" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C92BA55F19049DCA00CD3821 /* Debug */,
+				C92BA56019049DCA00CD3821 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C92BA56119049DCA00CD3821 /* Build configuration list for PBXNativeTarget "Image ShaderTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C92BA56219049DCA00CD3821 /* Debug */,
+				C92BA56319049DCA00CD3821 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C92BA52419049DCA00CD3821 /* Project object */;
+}

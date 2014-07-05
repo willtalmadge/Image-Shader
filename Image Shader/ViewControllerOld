@@ -1,0 +1,344 @@
+//
+//  ViewController.m
+//  Image Shader
+//
+//  Created by William Talmadge on 4/20/14.
+//  Copyright (c) 2014 William Talmadge. All rights reserved.
+//
+
+#import "ViewController.h"
+#import <GLKit/GLKit.h>
+#import <CoreGraphics/CoreGraphics.h>
+
+#define BUFFER_OFFSET(i) ((char *)NULL + (i))
+GLfloat gQuadData[36] =
+{
+    // Data layout for each line below is:
+    // positionX, positionY, positionZ,  texS, texT, colorMultiplier
+    -0.5f, -0.5f, 0.5f, 0.0, 0.0,   1.0,
+    0.5f, -0.5f, 0.5f,  1.0, 0.0,   0.5,
+    -0.5f,  0.5f, 0.5f, 0.0, 1.0,   0.5,
+    
+    0.5f,  0.5f, 0.5f,  1.0, 1.0,   0.5,
+    -0.5f, 0.5f, 0.5f,  0.0, 1.0,   0.5,
+    0.5f, -0.5f, 0.5f,  1.0, 0.0,   0.5
+};
+
+//This attribute is to define a shader attribute that gets multiplied by the
+//color to darken the image.
+const GLuint AttributeMultiplier = 5;
+
+@interface ViewController ()
+{
+    GLuint _program;
+    GLuint _vertexArray;
+    GLuint _vertexBuffer;
+}
+
+@end
+
+@implementation ViewController
+
+void ProviderReleaseData ( void *info, const void *data, size_t size )
+{
+    free((void*)data);
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+	
+    //Make context, set current
+    EAGLContext* context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+    [EAGLContext setCurrentContext:context];
+    
+    //Load shaders
+    [self loadShaders];
+    
+    //Setup square geometry
+    glGenVertexArraysOES(1, &_vertexArray);
+    glBindVertexArrayOES(_vertexArray);
+    
+    glGenBuffers(1, &_vertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(gQuadData), gQuadData, GL_STATIC_DRAW);
+    
+    glEnableVertexAttribArray(GLKVertexAttribPosition);
+    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 24, BUFFER_OFFSET(0));
+    glEnableVertexAttribArray(GLKVertexAttribTexCoord0);
+    glVertexAttribPointer(GLKVertexAttribTexCoord0, 2, GL_FLOAT, GL_FALSE, 24, BUFFER_OFFSET(12));
+    glEnableVertexAttribArray(AttributeMultiplier);
+    glVertexAttribPointer(AttributeMultiplier, 1, GL_FLOAT, GL_FALSE, 24, BUFFER_OFFSET(20));
+    glBindVertexArrayOES(0);
+    
+    //Make framebuffers
+    GLuint frameBufferA;
+    GLuint frameBufferB;
+    glGenFramebuffers(1, &frameBufferA);
+    glGenFramebuffers(1, &frameBufferB);
+    glBindFramebuffer(GL_FRAMEBUFFER, frameBufferA);
+    
+    //Make texture, use in framebuffer as first render buffer
+    GLuint textureA;
+    glGenTextures(1, &textureA);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureA);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGBA, GL_HALF_FLOAT_OES, NULL);
+    
+    //Must set texture parameters or it won't use it as a proper texture.
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureA, 0);
+    glDisable(GL_DEPTH_TEST);
+    glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+
+    //Load a texture to render with
+    NSError* error;
+    GLKTextureInfo* textureB;
+    NSDictionary *options = @{GLKTextureLoaderOriginBottomLeft:@NO};
+    NSString* path = [[NSBundle mainBundle] pathForResource:@"chateu" ofType:@"png"];
+    textureB = [GLKTextureLoader textureWithContentsOfFile:path  options:options error:&error];
+    if (error) {
+        NSLog(@"Problem loading the texture");
+    }
+    glBindTexture(GL_TEXTURE_2D, textureB.name);
+    GLuint textureUniformLocation = glGetUniformLocation(_program, "inputImageTexture");
+    GLint currentProgram;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
+    NSLog(@"Current program %d", currentProgram);
+    glUniform1i(textureUniformLocation, 0);
+    //Attach texture to the second framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, frameBufferB);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureB.name, 0);
+    glDisable(GL_DEPTH_TEST);
+    glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+
+    
+    //Render a blue square to A
+    glBindFramebuffer(GL_FRAMEBUFFER, frameBufferA);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
+    {
+        glBindTexture(GL_TEXTURE_2D, textureB.name);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glViewport(0, 0, 256, 256);
+        glBindVertexArrayOES(_vertexArray);
+        glUseProgram(_program);
+        glGetIntegerv(GL_CURRENT_PROGRAM, &currentProgram);
+        NSLog(@"Current program %d", currentProgram);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+    
+    //Change framebuffers
+    glBindFramebuffer(GL_FRAMEBUFFER, frameBufferB);
+    glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+    
+    //Render again
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
+    {
+        glBindTexture(GL_TEXTURE_2D, textureA);
+        glBindVertexArrayOES(_vertexArray);
+        glUseProgram(_program);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glFinish();
+    }
+    
+    //Read the pixels out of the second texture
+    // allocate array and read pixels into it.
+    GLubyte *tempImagebuffer = (GLubyte *) malloc(256*256*4);
+    
+    glReadPixels( 0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, tempImagebuffer);
+    
+    // make data provider with data.
+    CGDataProviderRef provider = CGDataProviderCreateWithData(NULL, tempImagebuffer, 256*256*4, ProviderReleaseData);
+    
+    // prep the ingredients
+    int bitsPerComponent = 8;
+    int bitsPerPixel = 32;
+    int bytesPerRow = 4*256;
+    CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
+    CGBitmapInfo bitmapInfo = kCGBitmapByteOrderDefault;
+    
+    CGColorRenderingIntent renderingIntent = kCGRenderingIntentDefault;
+    
+    // make the cgimage
+    CGImageRef imageRef = CGImageCreate(256, 256, bitsPerComponent, bitsPerPixel, bytesPerRow, colorSpaceRef, bitmapInfo, provider, NULL, NO, renderingIntent);
+    
+    // then make the uiimage from that
+    
+    UIImage *myImage =  [UIImage imageWithCGImage:imageRef] ;
+    
+    CGDataProviderRelease(provider);
+    CGImageRelease(imageRef);
+    CGColorSpaceRelease(colorSpaceRef);
+    
+    [UIImagePNGRepresentation(myImage) writeToFile:@"/Users/williamtalmadge/Downloads/red.png" atomically:YES];
+    
+    glDeleteTextures(1, &textureA);
+    GLuint tex = textureB.name;
+    glDeleteTextures(1, &tex);
+    glDeleteFramebuffers(1, &frameBufferA);
+    glDeleteFramebuffers(1, &frameBufferB);
+    glDeleteProgram(_program);
+    glDeleteVertexArraysOES(1, &_vertexArray);
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+#pragma mark -  OpenGL ES 2 shader compilation
+
+- (BOOL)loadShaders
+{
+    GLuint vertShader, fragShader;
+    NSString *vertShaderPathname, *fragShaderPathname;
+    
+    // Create shader program.
+    _program = glCreateProgram();
+    
+    // Create and compile vertex shader.
+    vertShaderPathname = [[NSBundle mainBundle] pathForResource:@"passThrough" ofType:@"vsh"];
+    if (![self compileShader:&vertShader type:GL_VERTEX_SHADER file:vertShaderPathname]) {
+        NSLog(@"Failed to compile vertex shader");
+        return NO;
+    }
+    
+    // Create and compile fragment shader.
+    fragShaderPathname = [[NSBundle mainBundle] pathForResource:@"blue" ofType:@"fsh"];
+    if (![self compileShader:&fragShader type:GL_FRAGMENT_SHADER file:fragShaderPathname]) {
+        NSLog(@"Failed to compile fragment shader");
+        return NO;
+    }
+    
+    // Attach vertex shader to program.
+    glAttachShader(_program, vertShader);
+    
+    // Attach fragment shader to program.
+    glAttachShader(_program, fragShader);
+    
+    // Bind attribute locations.
+    // This needs to be done prior to linking.
+    glBindAttribLocation(_program, GLKVertexAttribPosition, "position");
+    glBindAttribLocation(_program, GLKVertexAttribTexCoord0, "inputTextureCoordinate");
+    glBindAttribLocation(_program, AttributeMultiplier, "inputColorMultiplier");
+    //glBindAttribLocation(_program, GLKVertexAttribNormal, "normal");
+    
+    // Link program.
+    if (![self linkProgram:_program]) {
+        NSLog(@"Failed to link program: %d", _program);
+        
+        if (vertShader) {
+            glDeleteShader(vertShader);
+            vertShader = 0;
+        }
+        if (fragShader) {
+            glDeleteShader(fragShader);
+            fragShader = 0;
+        }
+        if (_program) {
+            glDeleteProgram(_program);
+            _program = 0;
+        }
+        
+        return NO;
+    }
+    
+    // Release vertex and fragment shaders.
+    if (vertShader) {
+        glDetachShader(_program, vertShader);
+        glDeleteShader(vertShader);
+    }
+    if (fragShader) {
+        glDetachShader(_program, fragShader);
+        glDeleteShader(fragShader);
+    }
+    
+    return YES;
+}
+
+- (BOOL)compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file
+{
+    GLint status;
+    const GLchar *source;
+    
+    source = (GLchar *)[[NSString stringWithContentsOfFile:file encoding:NSUTF8StringEncoding error:nil] UTF8String];
+    if (!source) {
+        NSLog(@"Failed to load vertex shader");
+        return NO;
+    }
+    
+    *shader = glCreateShader(type);
+    glShaderSource(*shader, 1, &source, NULL);
+    glCompileShader(*shader);
+    
+#if defined(DEBUG)
+    GLint logLength;
+    glGetShaderiv(*shader, GL_INFO_LOG_LENGTH, &logLength);
+    if (logLength > 0) {
+        GLchar *log = (GLchar *)malloc(logLength);
+        glGetShaderInfoLog(*shader, logLength, &logLength, log);
+        NSLog(@"Shader compile log:\n%s", log);
+        free(log);
+    }
+#endif
+    
+    glGetShaderiv(*shader, GL_COMPILE_STATUS, &status);
+    if (status == 0) {
+        glDeleteShader(*shader);
+        return NO;
+    }
+    
+    return YES;
+}
+
+- (BOOL)linkProgram:(GLuint)prog
+{
+    GLint status;
+    glLinkProgram(prog);
+    
+#if defined(DEBUG)
+    GLint logLength;
+    glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &logLength);
+    if (logLength > 0) {
+        GLchar *log = (GLchar *)malloc(logLength);
+        glGetProgramInfoLog(prog, logLength, &logLength, log);
+        NSLog(@"Program link log:\n%s", log);
+        free(log);
+    }
+#endif
+    
+    glGetProgramiv(prog, GL_LINK_STATUS, &status);
+    if (status == 0) {
+        return NO;
+    }
+    
+    return YES;
+}
+
+- (BOOL)validateProgram:(GLuint)prog
+{
+    GLint logLength, status;
+    
+    glValidateProgram(prog);
+    glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &logLength);
+    if (logLength > 0) {
+        GLchar *log = (GLchar *)malloc(logLength);
+        glGetProgramInfoLog(prog, logLength, &logLength, log);
+        NSLog(@"Program validate log:\n%s", log);
+        free(log);
+    }
+    
+    glGetProgramiv(prog, GL_VALIDATE_STATUS, &status);
+    if (status == 0) {
+        return NO;
+    }
+    
+    return YES;
+}
+
+@end
