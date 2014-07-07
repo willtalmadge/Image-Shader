@@ -1,30 +1,34 @@
-//
-//  ViewController.m
-//  Image Shader
-//
-//  Created by William Talmadge on 4/20/14.
-//  Copyright (c) 2014 William Talmadge. All rights reserved.
-//
+/*
+ Copyright (C) 2014  William B. Talmadge
+ 
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>
+ */
 
 #import "ViewController.h"
 #import <GLKit/GLKit.h>
 #import <CoreGraphics/CoreGraphics.h>
-//#import "GLArrayBuffer.h"
-//#import "GLShaderProgram.h"
-//#import "ISPipeline.hh"
 #import <vector>
-//#import "ButterflyStageTable.h"
 #import "ISPassThroughDrawable.h"
 #import "FFTPermute.h"
 #import "FFTSubBlock.h"
 #import "ISPipeline.h"
 #import "ISComplex.h"
-#import "FFTInterleaveToFt.h"
-#import "FFTInterleaveToFtNdc.h"
-#import "FFTFtToInterleave.h"
-#import "FFTFtToInterleaveDC.h"
-#import "FFTRealTransform.h"
 #import "FFTRealTransformNDC.h"
+#import "FFTRealTransformLowFreq.h"
+#import "FFTRealTransformHighFreq.h"
+#import "FFTGaussianFilter.h"
+
 using namespace std;
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
@@ -172,56 +176,6 @@ void butterflyAll(ISPipeline& pipeline, GLuint width, GLuint height, FFTSubBlock
     }
     pipeline.transform<ISComplex, ISComplex>(butterflyStage(width, height, orientation, factors.back(), 0, blockCapacity, sign));
 }
-function<void (ISComplex&, ISComplex&)> interleaveToFt(GLuint width, GLuint height)
-{
-    return [=] (ISComplex& input, ISComplex& output) {
-        unique_ptr<ISSingleton> real =
-        input.pipeline().transform<ISComplex, ISSingleton>
-        ([=] (ISSingleton& output) {
-            output.setup<ISRe16Rgba>(width, height);
-        },
-         [=] (ISSingleton& output, ISPipeline& pipeline) {
-             pipeline.drawablePass<ISComplex, ISSingleton>(output, FFTInterleaveToFtNdc(width, height, FFTInterleaveToFtNdc::OutType::Real));
-             pipeline.drawablePass<ISComplex, ISSingleton>(output, FFTInterleaveToFt(width, height, FFTInterleaveToFt::OutType::Real));
-         }).result<ISSingleton>();
-        
-        unique_ptr<ISSingleton> imag =
-        input.pipeline().transform<ISComplex, ISSingleton>
-        ([=] (ISSingleton& output) {
-            output.setup<ISRe16Rgba>(width, height);
-        },
-         [=] (ISSingleton& output, ISPipeline& pipeline) {
-             pipeline.drawablePass<ISComplex, ISSingleton>(output, FFTInterleaveToFtNdc(width, height, FFTInterleaveToFtNdc::OutType::Imag));
-             pipeline.drawablePass<ISComplex, ISSingleton>(output, FFTInterleaveToFt(width, height, FFTInterleaveToFt::OutType::Imag));
-         }).result<ISSingleton>();
-        output.setup(real, imag);
-    };
-}
-function<void (ISComplex&, ISComplex&)> ftToInterleave(GLuint width, GLuint height)
-{
-    return [=] (ISComplex& input, ISComplex& output) {
-        unique_ptr<ISSingleton> real =
-        input.pipeline().transform<ISComplex, ISSingleton>
-        ([=] (ISSingleton& output) {
-            output.setup<ISRe16Rgba>(width, height);
-        },
-         [=] (ISSingleton& output, ISPipeline& pipeline) {
-             pipeline.drawablePass<ISComplex, ISSingleton>(output, FFTFtToInterleaveDC(width, height, FFTFtToInterleaveDC::OutType::Real));
-             pipeline.drawablePass<ISComplex, ISSingleton>(output, FFTFtToInterleave(width, height, FFTFtToInterleave::OutType::Real));
-         }).result<ISSingleton>();
-        
-        unique_ptr<ISSingleton> imag =
-        input.pipeline().transform<ISComplex, ISSingleton>
-        ([=] (ISSingleton& output) {
-            output.setup<ISRe16Rgba>(width, height);
-        },
-         [=] (ISSingleton& output, ISPipeline& pipeline) {
-             pipeline.drawablePass<ISComplex, ISSingleton>(output, FFTFtToInterleaveDC(width, height, FFTFtToInterleaveDC::OutType::Imag));
-             pipeline.drawablePass<ISComplex, ISSingleton>(output, FFTFtToInterleave(width, height, FFTFtToInterleave::OutType::Imag));
-         }).result<ISSingleton>();
-        output.setup(real, imag);
-    };
-}
 function<void (ISComplex&, ISComplex&)> realTransform(GLuint width, GLuint height, int direction)
 {
     return [=] (ISComplex& input, ISComplex& output) {
@@ -231,7 +185,9 @@ function<void (ISComplex&, ISComplex&)> realTransform(GLuint width, GLuint heigh
             output.setup<ISRe16Rgba>(width, height);
         }, [=] (ISSingleton& output, ISPipeline& pipeline) {
             pipeline.drawablePass<ISComplex, ISSingleton>(output, FFTRealTransformNDC(width, height, FFTRealTransformNDC::OutType::Real, direction));
-            pipeline.drawablePass<ISComplex, ISSingleton>(output, FFTRealTransform(width, height, FFTRealTransform::OutType::Real, direction));
+            pipeline.drawablePass<ISComplex, ISSingleton>(output, FFTRealTransformHighFreq(width, height, FFTRealTransformHighFreq::OutType::Real, direction));
+            pipeline.drawablePass<ISComplex, ISSingleton>(output, FFTRealTransformLowFreq(width, height, FFTRealTransformLowFreq::OutType::Real, direction));
+
         }).result<ISSingleton>();
         
         unique_ptr<ISSingleton> imag =
@@ -240,10 +196,31 @@ function<void (ISComplex&, ISComplex&)> realTransform(GLuint width, GLuint heigh
             output.setup<ISRe16Rgba>(width, height);
         }, [=] (ISSingleton& output, ISPipeline& pipeline) {
             pipeline.drawablePass<ISComplex, ISSingleton>(output, FFTRealTransformNDC(width, height, FFTRealTransformNDC::OutType::Imag, direction));
-            pipeline.drawablePass<ISComplex, ISSingleton>(output, FFTRealTransform(width, height, FFTRealTransform::OutType::Imag, direction));
+            pipeline.drawablePass<ISComplex, ISSingleton>(output, FFTRealTransformLowFreq(width, height, FFTRealTransformLowFreq::OutType::Imag, direction));
+            pipeline.drawablePass<ISComplex, ISSingleton>(output, FFTRealTransformHighFreq(width, height, FFTRealTransformHighFreq::OutType::Imag, direction));
         }).result<ISSingleton>();
         output.setup(real, imag);
     };
+}
+void readFBRow(GLuint width, GLuint y0)
+{
+    GLfloat *r = new GLfloat[4*width];
+    glReadPixels(0, y0, width, 1, GL_RGBA, GL_FLOAT, r);
+    for (int i = 0; i < width; i++) {
+        cout << "{";
+        for (int j = 0; j < 4; j++) {
+            cout << r[4*i + j];
+            if (j < 3) {
+                cout << ", ";
+            }
+        }
+        cout << "}";
+        if (i < width - 1) {
+            cout << ", ";
+        }
+        cout << endl;
+    }
+    delete [] r;
 }
 - (void)viewDidLoad
 {
@@ -273,7 +250,7 @@ function<void (ISComplex&, ISComplex&)> realTransform(GLuint width, GLuint heigh
     //Forward real 2d transform
     pipeline.transform<ISSingleton, ISComplex>(permuteEvenToRealAndOddToImag(w/2, h, FFTPermute::Orientation::Cols, factors));
     butterflyAll(pipeline, w/2, h, FFTSubBlock::Orientation::Cols, 1, factors);
-    
+
     auto scale = [=] (ISComplex& input, ISComplex& output) {
         unique_ptr<ISSingleton> real =
         input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISSingleton, ISPassThroughDrawable>
@@ -296,15 +273,40 @@ function<void (ISComplex&, ISComplex&)> realTransform(GLuint width, GLuint heigh
     pipeline.transform<ISComplex, ISComplex>(permuteComplex(w/2, h, FFTPermute::Orientation::Rows, factorsv));
     butterflyAll(pipeline, w/2, h, FFTSubBlock::Orientation::Rows, 1, factorsv);
 
+
     //Convert interleave to FT spectrum and back, don't forget to create the phase tables in the cache first
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    FFTPhaseTable::renderPhaseTable(w/2, 1);
-    FFTPhaseTable::renderPhaseTable(w/2, -1);
+    FFTPhaseTable::renderPhaseTable(w/2, w, 1);
+    FFTPhaseTable::renderPhaseTable(w/2, w, -1);
+    FFTPhaseTable::renderPhaseTable(w/2+1, w, 1);
+    FFTPhaseTable::renderPhaseTable(w/2+1, w, -1);
     glBindFramebuffer(GL_FRAMEBUFFER, ISPipeline::_framebufferName);
 
-    pipeline.transform<ISComplex, ISComplex>(realTransform(w/2, h, 1));
+    //TODO: verify the FFT is right, not just invertible. Use the print phase table to show a list of floats and compare to mathematica
+    //If the transform is still invertible it might be a problem with the phase table.
+    //TODO: This is "working" need another verification that the phase table is actually correct
+    //Incorrect phase table use still allows the real transform to be invertible if it's incorrect on each side
+//    pipeline.transform<ISComplex, ISComplex>(realTransform(w/2, h, 1));
+    
+    glClearColor(0.0, 0.0, 0.0, 1.0);
+    //Gaussian filter
+    pipeline.transform<ISComplex, ISComplex>
+    ([=](ISComplex& input, ISComplex& output) {
+        unique_ptr<ISSingleton> real =
+        input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISSingleton, FFTGaussianFilter>
+        ([=] (ISSingleton& input, ISSingleton& output) {
+            output.setup<ISRe16Rgba>(w/2, h);
+        }, FFTGaussianFilter(w/2, h, 50)).result<ISSingleton>();
+        unique_ptr<ISSingleton> imag =
+        input.getImag()->asSingleton()->pipeline().transform<ISSingleton, ISSingleton, FFTGaussianFilter>
+        ([=] (ISSingleton& input, ISSingleton& output) {
+            output.setup<ISRe16Rgba>(w/2, h);
+        }, FFTGaussianFilter(w/2, h, 50)).result<ISSingleton>();
+        output.setup(real, imag);
+    });
+    /*
     pipeline.transform<ISComplex, ISComplex>(realTransform(w/2, h, -1));
-/*
+
     //Inverse 2D
 
     pipeline.transform<ISComplex, ISComplex>(permuteComplex(w/2, h, FFTPermute::Orientation::Cols, factors));

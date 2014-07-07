@@ -7,13 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C907B5B9190E246B00001978 /* ViewControllerOld in Resources */ = {isa = PBXBuildFile; fileRef = C907B5B8190E246B00001978 /* ViewControllerOld */; };
 		C91D3FAE195DB1CE00F47B78 /* cyberpunk.png in Resources */ = {isa = PBXBuildFile; fileRef = C91D3FAD195DB1CE00F47B78 /* cyberpunk.png */; };
-		C91D3FB719612DE900F47B78 /* FFTInterleaveToFt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C91D3FB519612DE900F47B78 /* FFTInterleaveToFt.cpp */; };
-		C91D3FBA19612E0B00F47B78 /* FFTInterleaveToFtNdc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C91D3FB819612E0B00F47B78 /* FFTInterleaveToFtNdc.cpp */; };
 		C924647319456A8000E4BBEE /* Macro.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C924647119456A8000E4BBEE /* Macro.cpp */; };
-		C92ADD371919678A003F4EEA /* texture_map.fsh in Resources */ = {isa = PBXBuildFile; fileRef = C92ADD361919678A003F4EEA /* texture_map.fsh */; };
-		C92ADD3919196A0C003F4EEA /* ortho_texture.vsh in Resources */ = {isa = PBXBuildFile; fileRef = C92ADD3819196A0C003F4EEA /* ortho_texture.vsh */; };
 		C92BA53019049DCA00CD3821 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C92BA52F19049DCA00CD3821 /* Foundation.framework */; };
 		C92BA53219049DCA00CD3821 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C92BA53119049DCA00CD3821 /* CoreGraphics.framework */; };
 		C92BA53419049DCA00CD3821 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C92BA53319049DCA00CD3821 /* UIKit.framework */; };
@@ -29,8 +24,6 @@
 		C92BA55B19049DCA00CD3821 /* Image_ShaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C92BA55A19049DCA00CD3821 /* Image_ShaderTests.m */; };
 		C92BA5661904A7C000CD3821 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C92BA5641904A7C000CD3821 /* GLKit.framework */; };
 		C92BA5671904A7C000CD3821 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C92BA5651904A7C000CD3821 /* OpenGLES.framework */; };
-		C94B82781904ECCB006A3A6D /* passThrough.vsh in Resources */ = {isa = PBXBuildFile; fileRef = C94B82771904ECCB006A3A6D /* passThrough.vsh */; };
-		C94B827A1904ED35006A3A6D /* blue.fsh in Resources */ = {isa = PBXBuildFile; fileRef = C94B82791904ED35006A3A6D /* blue.fsh */; };
 		C94B827C19062B74006A3A6D /* chateu.png in Resources */ = {isa = PBXBuildFile; fileRef = C94B827B19062B74006A3A6D /* chateu.png */; };
 		C9502D35193BE82C0075652D /* ISTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9502D33193BE82C0075652D /* ISTexture.cpp */; };
 		C9502D38193BE83C0075652D /* ISTextureTuple.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9502D36193BE83C0075652D /* ISTextureTuple.cpp */; };
@@ -45,13 +38,13 @@
 		C96C04FE194CE16400328686 /* ISComplex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C96C04FC194CE16400328686 /* ISComplex.cpp */; };
 		C96C050419516B5000328686 /* FFTSubBlock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C96C050219516B5000328686 /* FFTSubBlock.cpp */; };
 		C9A4471C19628DBF008305DF /* FFTPhaseTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A4471A19628DBF008305DF /* FFTPhaseTable.cpp */; };
-		C9A4471F19633DC4008305DF /* FFTFtToInterleave.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A4471D19633DC4008305DF /* FFTFtToInterleave.cpp */; };
-		C9A4472219650DED008305DF /* FFTFtToInterleaveDC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A4472019650DED008305DF /* FFTFtToInterleaveDC.cpp */; };
-		C9A4472519664E57008305DF /* FFTRealTransform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A4472319664E57008305DF /* FFTRealTransform.cpp */; };
 		C9A4472819664E6C008305DF /* FFTRealTransformNDC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A4472619664E6C008305DF /* FFTRealTransformNDC.cpp */; };
+		C9A4472B1967A9D7008305DF /* FFTRealTransformLowFreq.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A447291967A9D7008305DF /* FFTRealTransformLowFreq.cpp */; };
+		C9A4472E1967A9E5008305DF /* FFTRealTransformHighFreq.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A4472C1967A9E5008305DF /* FFTRealTransformHighFreq.cpp */; };
 		C9AEF451194A937900079299 /* FFTPermute.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9AEF44F194A937900079299 /* FFTPermute.cpp */; };
 		C9BC08CE1927E7C900587377 /* page.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C9BC08CD1927E7C900587377 /* page.jpg */; };
 		C9DDC3501935A510003E59C4 /* ISDrawable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9DDC34E1935A510003E59C4 /* ISDrawable.cpp */; };
+		C9E0E548196A0AC000405C47 /* FFTGaussianFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9E0E546196A0AC000405C47 /* FFTGaussianFilter.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,16 +58,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		C907B5B8190E246B00001978 /* ViewControllerOld */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ViewControllerOld; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		C91D3FAD195DB1CE00F47B78 /* cyberpunk.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cyberpunk.png; path = ../cyberpunk.png; sourceTree = "<group>"; };
-		C91D3FB519612DE900F47B78 /* FFTInterleaveToFt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTInterleaveToFt.cpp; sourceTree = "<group>"; };
-		C91D3FB619612DE900F47B78 /* FFTInterleaveToFt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTInterleaveToFt.h; sourceTree = "<group>"; };
-		C91D3FB819612E0B00F47B78 /* FFTInterleaveToFtNdc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTInterleaveToFtNdc.cpp; sourceTree = "<group>"; };
-		C91D3FB919612E0B00F47B78 /* FFTInterleaveToFtNdc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTInterleaveToFtNdc.h; sourceTree = "<group>"; };
 		C924647119456A8000E4BBEE /* Macro.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Macro.cpp; sourceTree = "<group>"; };
 		C924647219456A8000E4BBEE /* Macro.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Macro.hpp; sourceTree = "<group>"; };
-		C92ADD361919678A003F4EEA /* texture_map.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = texture_map.fsh; sourceTree = "<group>"; };
-		C92ADD3819196A0C003F4EEA /* ortho_texture.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = ortho_texture.vsh; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.glsl; };
 		C92BA52C19049DCA00CD3821 /* Image Shader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Image Shader.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C92BA52F19049DCA00CD3821 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		C92BA53119049DCA00CD3821 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -96,8 +82,6 @@
 		C92BA55A19049DCA00CD3821 /* Image_ShaderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Image_ShaderTests.m; sourceTree = "<group>"; };
 		C92BA5641904A7C000CD3821 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		C92BA5651904A7C000CD3821 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
-		C94B82771904ECCB006A3A6D /* passThrough.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = passThrough.vsh; path = ../passThrough.vsh; sourceTree = "<group>"; };
-		C94B82791904ED35006A3A6D /* blue.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = blue.fsh; sourceTree = "<group>"; };
 		C94B827B19062B74006A3A6D /* chateu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chateu.png; sourceTree = "<group>"; };
 		C9502D33193BE82C0075652D /* ISTexture.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ISTexture.cpp; sourceTree = "<group>"; };
 		C9502D34193BE82C0075652D /* ISTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISTexture.h; sourceTree = "<group>"; };
@@ -122,19 +106,19 @@
 		C96C050319516B5000328686 /* FFTSubBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTSubBlock.h; sourceTree = "<group>"; };
 		C9A4471A19628DBF008305DF /* FFTPhaseTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTPhaseTable.cpp; sourceTree = "<group>"; };
 		C9A4471B19628DBF008305DF /* FFTPhaseTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTPhaseTable.h; sourceTree = "<group>"; };
-		C9A4471D19633DC4008305DF /* FFTFtToInterleave.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTFtToInterleave.cpp; sourceTree = "<group>"; };
-		C9A4471E19633DC4008305DF /* FFTFtToInterleave.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTFtToInterleave.h; sourceTree = "<group>"; };
-		C9A4472019650DED008305DF /* FFTFtToInterleaveDC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTFtToInterleaveDC.cpp; sourceTree = "<group>"; };
-		C9A4472119650DED008305DF /* FFTFtToInterleaveDC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTFtToInterleaveDC.h; sourceTree = "<group>"; };
-		C9A4472319664E57008305DF /* FFTRealTransform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTRealTransform.cpp; sourceTree = "<group>"; };
-		C9A4472419664E57008305DF /* FFTRealTransform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTRealTransform.h; sourceTree = "<group>"; };
 		C9A4472619664E6C008305DF /* FFTRealTransformNDC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTRealTransformNDC.cpp; sourceTree = "<group>"; };
 		C9A4472719664E6C008305DF /* FFTRealTransformNDC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTRealTransformNDC.h; sourceTree = "<group>"; };
+		C9A447291967A9D7008305DF /* FFTRealTransformLowFreq.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTRealTransformLowFreq.cpp; sourceTree = "<group>"; };
+		C9A4472A1967A9D7008305DF /* FFTRealTransformLowFreq.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTRealTransformLowFreq.h; sourceTree = "<group>"; };
+		C9A4472C1967A9E5008305DF /* FFTRealTransformHighFreq.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTRealTransformHighFreq.cpp; sourceTree = "<group>"; };
+		C9A4472D1967A9E5008305DF /* FFTRealTransformHighFreq.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTRealTransformHighFreq.h; sourceTree = "<group>"; };
 		C9AEF44F194A937900079299 /* FFTPermute.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTPermute.cpp; sourceTree = "<group>"; };
 		C9AEF450194A937900079299 /* FFTPermute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTPermute.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		C9BC08CD1927E7C900587377 /* page.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = page.jpg; sourceTree = "<group>"; };
 		C9DDC34E1935A510003E59C4 /* ISDrawable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ISDrawable.cpp; sourceTree = "<group>"; };
 		C9DDC34F1935A510003E59C4 /* ISDrawable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISDrawable.h; sourceTree = "<group>"; };
+		C9E0E546196A0AC000405C47 /* FFTGaussianFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTGaussianFilter.cpp; sourceTree = "<group>"; };
+		C9E0E547196A0AC000405C47 /* FFTGaussianFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTGaussianFilter.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -170,20 +154,16 @@
 				C9AEF450194A937900079299 /* FFTPermute.h */,
 				C96C050219516B5000328686 /* FFTSubBlock.cpp */,
 				C96C050319516B5000328686 /* FFTSubBlock.h */,
-				C91D3FB619612DE900F47B78 /* FFTInterleaveToFt.h */,
-				C91D3FB519612DE900F47B78 /* FFTInterleaveToFt.cpp */,
-				C91D3FB919612E0B00F47B78 /* FFTInterleaveToFtNdc.h */,
-				C91D3FB819612E0B00F47B78 /* FFTInterleaveToFtNdc.cpp */,
-				C9A4471E19633DC4008305DF /* FFTFtToInterleave.h */,
-				C9A4471D19633DC4008305DF /* FFTFtToInterleave.cpp */,
-				C9A4472119650DED008305DF /* FFTFtToInterleaveDC.h */,
-				C9A4472019650DED008305DF /* FFTFtToInterleaveDC.cpp */,
 				C9A4471A19628DBF008305DF /* FFTPhaseTable.cpp */,
 				C9A4471B19628DBF008305DF /* FFTPhaseTable.h */,
-				C9A4472419664E57008305DF /* FFTRealTransform.h */,
-				C9A4472319664E57008305DF /* FFTRealTransform.cpp */,
 				C9A4472719664E6C008305DF /* FFTRealTransformNDC.h */,
 				C9A4472619664E6C008305DF /* FFTRealTransformNDC.cpp */,
+				C9A4472A1967A9D7008305DF /* FFTRealTransformLowFreq.h */,
+				C9A447291967A9D7008305DF /* FFTRealTransformLowFreq.cpp */,
+				C9A4472D1967A9E5008305DF /* FFTRealTransformHighFreq.h */,
+				C9A4472C1967A9E5008305DF /* FFTRealTransformHighFreq.cpp */,
+				C9E0E546196A0AC000405C47 /* FFTGaussianFilter.cpp */,
+				C9E0E547196A0AC000405C47 /* FFTGaussianFilter.h */,
 			);
 			name = FFT;
 			sourceTree = "<group>";
@@ -230,16 +210,11 @@
 				C924647219456A8000E4BBEE /* Macro.hpp */,
 				C96528821910BF6F00037819 /* street.png */,
 				C94B827B19062B74006A3A6D /* chateu.png */,
-				C94B82771904ECCB006A3A6D /* passThrough.vsh */,
-				C94B82791904ED35006A3A6D /* blue.fsh */,
-				C92ADD3819196A0C003F4EEA /* ortho_texture.vsh */,
-				C92ADD361919678A003F4EEA /* texture_map.fsh */,
 				C92BA53E19049DCA00CD3821 /* AppDelegate.h */,
 				C92BA53F19049DCA00CD3821 /* AppDelegate.m */,
 				C92BA54119049DCA00CD3821 /* Main.storyboard */,
 				C92BA54419049DCA00CD3821 /* ViewController.h */,
 				C92BA54519049DCA00CD3821 /* ViewController.mm */,
-				C907B5B8190E246B00001978 /* ViewControllerOld */,
 				C92BA54719049DCA00CD3821 /* Images.xcassets */,
 				C92BA53619049DCA00CD3821 /* Supporting Files */,
 			);
@@ -403,18 +378,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C92ADD371919678A003F4EEA /* texture_map.fsh in Resources */,
 				C9BC08CE1927E7C900587377 /* page.jpg in Resources */,
 				C92BA54819049DCA00CD3821 /* Images.xcassets in Resources */,
 				C91D3FAE195DB1CE00F47B78 /* cyberpunk.png in Resources */,
 				C94B827C19062B74006A3A6D /* chateu.png in Resources */,
 				C92BA53A19049DCA00CD3821 /* InfoPlist.strings in Resources */,
-				C94B82781904ECCB006A3A6D /* passThrough.vsh in Resources */,
 				C96528831910BF6F00037819 /* street.png in Resources */,
-				C94B827A1904ED35006A3A6D /* blue.fsh in Resources */,
-				C92ADD3919196A0C003F4EEA /* ortho_texture.vsh in Resources */,
 				C92BA54319049DCA00CD3821 /* Main.storyboard in Resources */,
-				C907B5B9190E246B00001978 /* ViewControllerOld in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -434,22 +404,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				C9502D3B1940353C0075652D /* ISPassThroughDrawable.cpp in Sources */,
-				C9A4472519664E57008305DF /* FFTRealTransform.cpp in Sources */,
+				C9A4472E1967A9E5008305DF /* FFTRealTransformHighFreq.cpp in Sources */,
 				C96528811910355900037819 /* ViewController.mm in Sources */,
 				C9A4471C19628DBF008305DF /* FFTPhaseTable.cpp in Sources */,
+				C9A4472B1967A9D7008305DF /* FFTRealTransformLowFreq.cpp in Sources */,
 				C9AEF451194A937900079299 /* FFTPermute.cpp in Sources */,
-				C91D3FB719612DE900F47B78 /* FFTInterleaveToFt.cpp in Sources */,
 				C9502D35193BE82C0075652D /* ISTexture.cpp in Sources */,
 				C96C04FE194CE16400328686 /* ISComplex.cpp in Sources */,
+				C9E0E548196A0AC000405C47 /* FFTGaussianFilter.cpp in Sources */,
 				C9502D411940F9020075652D /* ISShaderProgram.cpp in Sources */,
 				C9502D4519418A250075652D /* ISVertexArray.cpp in Sources */,
 				C96676861932FEF100F633DC /* ISPipeline.cpp in Sources */,
 				C9DDC3501935A510003E59C4 /* ISDrawable.cpp in Sources */,
-				C91D3FBA19612E0B00F47B78 /* FFTInterleaveToFtNdc.cpp in Sources */,
 				C92BA54019049DCA00CD3821 /* AppDelegate.m in Sources */,
 				C924647319456A8000E4BBEE /* Macro.cpp in Sources */,
-				C9A4472219650DED008305DF /* FFTFtToInterleaveDC.cpp in Sources */,
-				C9A4471F19633DC4008305DF /* FFTFtToInterleave.cpp in Sources */,
 				C92BA53C19049DCA00CD3821 /* main.m in Sources */,
 				C9502D49194396150075652D /* ISPassThrough.cpp in Sources */,
 				C9502D38193BE83C0075652D /* ISTextureTuple.cpp in Sources */,
@@ -580,6 +548,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Image Shader/Image Shader-Prefix.pch";
 				INFOPLIST_FILE = "Image Shader/Image Shader-Info.plist";
@@ -593,6 +562,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Image Shader/Image Shader-Prefix.pch";
 				INFOPLIST_FILE = "Image Shader/Image Shader-Info.plist";

@@ -1,14 +1,24 @@
-//
-//  FFTInterleaveToFt.h
-//  Image Shader
-//
-//  Created by William Talmadge on 6/29/14.
-//  Copyright (c) 2014 William Talmadge. All rights reserved.
-//
+/*
+ Copyright (C) 2014  William B. Talmadge
+ 
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>
+ */
 
-#ifndef __Image_Shader__FFTInterleaveToFt__
-#define __Image_Shader__FFTInterleaveToFt__
+#ifndef __Image_Shader__FFTRealTransformHighFreq__
+#define __Image_Shader__FFTRealTransformHighFreq__
 
+#include <iostream>
 #include <iostream>
 #include "ISDrawable.h"
 #include "ISComplex.h"
@@ -18,17 +28,17 @@
 
 //Write the shaders first. Make the drawable support your shader.
 //Define the type of your drawable
-struct FFTInterleaveToFt: public ISDrawable<ISComplex, ISSingleton, FFTInterleaveToFt>, ISComplexBindable {
+struct FFTRealTransformHighFreq: public ISDrawable<ISComplex, ISSingleton, FFTRealTransformHighFreq>, ISComplexBindable {
     
-    using ISDrawableT = ISDrawable<ISComplex, ISSingleton, FFTInterleaveToFt>;
+    using ISDrawableT = ISDrawable<ISComplex, ISSingleton, FFTRealTransformHighFreq>;
     typedef ISComplex InputType; //FIXME: when it is building, try to exclude this
     
     enum class OutType { Real, Imag };
     //TODO: take arguments to the drawable in the constructor
-    FFTInterleaveToFt(GLuint width, GLuint height, OutType outType) : ISDrawableT(width, height), _outType(outType), _orthoMatrixPosition(0) {
+    FFTRealTransformHighFreq(GLuint width, GLuint height, OutType outType, int direction) : ISDrawableT(width, height), _outType(outType), _orthoMatrixPosition(0) {
         _orthoMatrix = GLKMatrix4MakeOrtho(0.0, _width, 0.0, _height, -1.0, 1.0);
+        _sign = -1*direction;
     }
-    //Implement the methods for the ISBindableType interface i.e. ISSingletonBindable as below
     GLuint realBindingTarget() const {
         assert(_isSetup);
         return _inputReUP;
@@ -40,18 +50,25 @@ struct FFTInterleaveToFt: public ISDrawable<ISComplex, ISSingleton, FFTInterleav
     void bindUniforms(ISComplex* inputTuple, ISSingleton* outputTuple) {
         //TODO: set uniforms (not samplers, that is automatic)
         glUniformMatrix4fv(_orthoMatrixPosition, 1, false, _orthoMatrix.m);
-        ISTextureRef table = FFTPhaseTable::getPhaseTable(_width, 1);
+        glUniform1f(_signUP, static_cast<GLfloat>(_sign));
+        ISTextureRef table = FFTPhaseTable::getPhaseTable(_width +1, 2*_width, -1*_sign);
         table->bindToShader(_phaseTableUP, inputTuple->textureUnitsUsed());
     }
     //TODO: hash parameters that determine geometry or shader source (not uniforms)
     size_t hashImpl() const {
         size_t result = 0;
+        if (_outType == OutType::Real) {
+            result = 0;
+        } else if (_outType == OutType::Imag) {
+            result = 1;
+        }
         return result;
     };
     //TODO: compare parameters that determine geometry or shader source (not uniforms)
     
-    bool compareImpl(const FFTInterleaveToFt& rhs) const {
+    bool compareImpl(const FFTRealTransformHighFreq& rhs) const {
         bool result = true;
+        result &= _outType == rhs._outType;
         return result;
     };
     void drawImpl() { };
@@ -59,9 +76,10 @@ struct FFTInterleaveToFt: public ISDrawable<ISComplex, ISSingleton, FFTInterleav
         ISVertexArray* geometry = new ISVertexArray();
         std::vector<GLfloat> vertices;
         //TODO: construct geometry
-        makeGlLookupColumnVarying(vertices, _height, 1, _width,
-                                  {1.0f/_width, 1.0f},
-                                  {1.0, 1.0f/_width});
+        makeGlLookupColumnVarying(vertices, _height,
+                                  _width/2, _width,
+                                  {1.0f/_width + 0.5f, 0.5f},
+                                  {1.0f/_width, 1.0f});
         //TODO: set attributes
         geometry->addFloatAttribute(0, 3);
         geometry->addFloatAttribute(1, 2);
@@ -89,6 +107,7 @@ struct FFTInterleaveToFt: public ISDrawable<ISComplex, ISSingleton, FFTInterleav
         _inputReUP = glGetUniformLocation(_program->program(), "inputRe");
         _inputImUP = glGetUniformLocation(_program->program(), "inputIm");
         _phaseTableUP = glGetUniformLocation(_program->program(), "phaseTable");
+        _signUP = glGetUniformLocation(_program->program(), "s");
     }
     
 protected:
@@ -97,10 +116,12 @@ protected:
     GLuint _inputImUP;
     GLuint _phaseTableUP;
     GLuint _orthoMatrixPosition;
+    GLuint _signUP;
     //TODO: define uniform positions
     
     GLKMatrix4 _orthoMatrix;
     OutType _outType;
+    GLint _sign;
     //TODO: define argument storage
     
     static const std::string fragShaderRe;
@@ -108,5 +129,4 @@ protected:
     
     static const std::string vertShader;
 };
-
-#endif /* defined(__Image_Shader__FFTInterleaveToFt__) */
+#endif /* defined(__Image_Shader__FFTRealTransformHighFreq__) */
