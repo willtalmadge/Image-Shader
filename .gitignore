@@ -1,4 +1,4 @@
 *.xcuserstate
-Image\ Shader.xcodeproj/project.xcworkspace/
+Image\ Shader.xcodeproj/project.xcworkspace/*
 Image\ Shader.xcodeproj/xcuserdata/*
 .DS_STORE
