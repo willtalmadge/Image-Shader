@@ -31,44 +31,9 @@
 
 using namespace std;
 
-#define BUFFER_OFFSET(i) ((char *)NULL + (i))
-/*
-GLfloat gQuadData[36] =
-{
-    // Data layout for each line below is:
-    // positionX, positionY, positionZ,  texS, texT, colorMultiplier
-    -0.5f, -0.5f, 0.5f, 0.0, 0.0,   1.0,
-    0.5f, -0.5f, 0.5f,  1.0, 0.0,   0.5,
-    -0.5f,  0.5f, 0.5f, 0.0, 1.0,   0.5,
-    
-    0.5f,  0.5f, 0.5f,  1.0, 1.0,   0.5,
-    -0.5f, 0.5f, 0.5f,  0.0, 1.0,   0.5,
-    0.5f, -0.5f, 0.5f,  1.0, 0.0,   0.5
-};
-*/
-
-GLfloat gQuadData[36] =
-{
-    // Data layout for each line below is:
-    // positionX, positionY, positionZ,  texS, texT, colorMultiplier
-    0.0,  0.0,   0.5f,  0.0, 0.0,   1.0,
-    256,  0.0,   0.5f,  1.0, 0.0,   0.5,
-    0.0,  256,   0.5f,  0.0, 1.0,   0.5,
-    
-    256,  256,   0.5f,  1.0, 1.0,   0.5,
-    0.0,  256,   0.5f,  0.0, 1.0,   0.5,
-    256,  0.0,   0.5f,  1.0, 0.0,   0.5
-};
-
-//This attribute is to define a shader attribute that gets multiplied by the
-//color to darken the image.
-//const GLuint AttributeMultiplier = 5;
-
 @interface ViewController ()
 {
-    GLuint _program;
-    GLuint _vertexArray;
-    GLuint _vertexBuffer;
+
 }
 @property (weak, nonatomic) IBOutlet UIImageView *imageView;
 
@@ -246,11 +211,19 @@ void readFBRow(GLuint width, GLuint y0)
     ISTextureRef tex = ISURe8Rgba::fromExisting(textureInfo.name, w, h, GL_UNSIGNED_BYTE);
     ISPipeline pipeline(unique_ptr<ISSingleton>(tex->asSingleton()));
     pipeline.setupRoot();
-
+    
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    FFTPhaseTable::renderPhaseTable(w/2, w, 1);
+    FFTPhaseTable::renderPhaseTable(w/2, w, -1);
+    FFTPhaseTable::renderPhaseTable(w/2+1, w, 1);
+    FFTPhaseTable::renderPhaseTable(w/2+1, w, -1);
+    glBindFramebuffer(GL_FRAMEBUFFER, ISPipeline::_framebufferName);
+    
     //Forward real 2d transform
     pipeline.transform<ISSingleton, ISComplex>(permuteEvenToRealAndOddToImag(w/2, h, FFTPermute::Orientation::Cols, factors));
     butterflyAll(pipeline, w/2, h, FFTSubBlock::Orientation::Cols, 1, factors);
-
+    pipeline.transform<ISComplex, ISComplex>(realTransform(w/2, h, 1));
+    
     auto scale = [=] (ISComplex& input, ISComplex& output) {
         unique_ptr<ISSingleton> real =
         input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISSingleton, ISPassThroughDrawable>
@@ -266,30 +239,15 @@ void readFBRow(GLuint width, GLuint y0)
         output.setup(real, imag);
     };
     //Without intermediate scaling the values are saturating the half floats on the phone
-    //This could be integrated into the non phase correcting pass, or multiply by 1/sqrt{R_{M-b} at each stage
+    //TODO: This could be integrated into the non phase correcting pass, or multiply by 1/sqrt{R_{M-b} at each stage
     pipeline.transform<ISComplex, ISComplex>(scale);
     
     vector<GLuint> factorsv = collectTwos(factorInteger(h));
     pipeline.transform<ISComplex, ISComplex>(permuteComplex(w/2, h, FFTPermute::Orientation::Rows, factorsv));
     butterflyAll(pipeline, w/2, h, FFTSubBlock::Orientation::Rows, 1, factorsv);
 
-
-    //Convert interleave to FT spectrum and back, don't forget to create the phase tables in the cache first
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    FFTPhaseTable::renderPhaseTable(w/2, w, 1);
-    FFTPhaseTable::renderPhaseTable(w/2, w, -1);
-    FFTPhaseTable::renderPhaseTable(w/2+1, w, 1);
-    FFTPhaseTable::renderPhaseTable(w/2+1, w, -1);
-    glBindFramebuffer(GL_FRAMEBUFFER, ISPipeline::_framebufferName);
-
-    //TODO: verify the FFT is right, not just invertible. Use the print phase table to show a list of floats and compare to mathematica
-    //If the transform is still invertible it might be a problem with the phase table.
-    //TODO: This is "working" need another verification that the phase table is actually correct
-    //Incorrect phase table use still allows the real transform to be invertible if it's incorrect on each side
-//    pipeline.transform<ISComplex, ISComplex>(realTransform(w/2, h, 1));
-    
-    glClearColor(0.0, 0.0, 0.0, 1.0);
     //Gaussian filter
+    glClearColor(0.0, 0.0, 0.0, 1.0);
     pipeline.transform<ISComplex, ISComplex>
     ([=](ISComplex& input, ISComplex& output) {
         unique_ptr<ISSingleton> real =
@@ -304,24 +262,21 @@ void readFBRow(GLuint width, GLuint y0)
         }, FFTGaussianFilter(w/2, h, 50)).result<ISSingleton>();
         output.setup(real, imag);
     });
-    /*
-    pipeline.transform<ISComplex, ISComplex>(realTransform(w/2, h, -1));
 
-    //Inverse 2D
-
-    pipeline.transform<ISComplex, ISComplex>(permuteComplex(w/2, h, FFTPermute::Orientation::Cols, factors));
-    butterflyAll(pipeline, w/2, h, FFTSubBlock::Orientation::Cols, -1, factors);
+    //Inverse real 2D transform
     pipeline.transform<ISComplex, ISComplex>(permuteComplex(w/2, h, FFTPermute::Orientation::Rows, factorsv));
     butterflyAll(pipeline, w/2, h, FFTSubBlock::Orientation::Rows, -1, factorsv);
-*/
+    pipeline.transform<ISComplex, ISComplex>(realTransform(w/2, h, -1));
+    pipeline.transform<ISComplex, ISComplex>(permuteComplex(w/2, h, FFTPermute::Orientation::Cols, factors));
+    butterflyAll(pipeline, w/2, h, FFTSubBlock::Orientation::Cols, -1, factors);
     
-    //Read out result
+    //Read out real channel result
     auto selectRealDiscardComplex = [=] (ISComplex& input, ISSingleton& output) {
         unique_ptr<ISSingleton> real =
         input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISSingleton, ISPassThroughDrawable>
         ([=] (ISSingleton& input, ISSingleton& output) {
             output.setup<ISURe8Rgba>(w, h);
-        }, ISPassThroughDrawable(w, h, 1.0f)).result<ISSingleton>();
+        }, ISPassThroughDrawable(w, h, 1.0f/h)).result<ISSingleton>();
         output.setup(real);
     };
     pipeline.transform<ISComplex, ISSingleton>(selectRealDiscardComplex);
@@ -332,20 +287,17 @@ void readFBRow(GLuint width, GLuint y0)
     GLubyte *tempImagebuffer = (GLubyte *) malloc(w*h*4);
     glReadPixels( 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, tempImagebuffer);
     
-    // make data provider with data.
     CGDataProviderRef provider = CGDataProviderCreateWithData(NULL, tempImagebuffer, w*h*4, ProviderReleaseData);
     
-    // prep the ingredients
     int bitsPerComponent = 8;
     int bitsPerPixel = 32;
     int bytesPerRow = 4*w;
     CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
     CGBitmapInfo bitmapInfo = kCGBitmapByteOrderDefault;
     CGColorRenderingIntent renderingIntent = kCGRenderingIntentDefault;
-    // make the cgimage
+
     CGImageRef imageRef = CGImageCreate(w, h, bitsPerComponent, bitsPerPixel, bytesPerRow, colorSpaceRef, bitmapInfo, provider, NULL, NO, renderingIntent);
     
-    // then make the uiimage from that
     UIImage *myImage =  [UIImage imageWithCGImage:imageRef] ;
     _imageView.image = myImage;
     CGDataProviderRelease(provider);
