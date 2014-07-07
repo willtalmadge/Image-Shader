@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C91D3FAE195DB1CE00F47B78 /* cyberpunk.png in Resources */ = {isa = PBXBuildFile; fileRef = C91D3FAD195DB1CE00F47B78 /* cyberpunk.png */; };
 		C924647319456A8000E4BBEE /* Macro.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C924647119456A8000E4BBEE /* Macro.cpp */; };
 		C92BA53019049DCA00CD3821 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C92BA52F19049DCA00CD3821 /* Foundation.framework */; };
 		C92BA53219049DCA00CD3821 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C92BA53119049DCA00CD3821 /* CoreGraphics.framework */; };
@@ -32,6 +31,7 @@
 		C9502D411940F9020075652D /* ISShaderProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9502D3F1940F9020075652D /* ISShaderProgram.cpp */; };
 		C9502D4519418A250075652D /* ISVertexArray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9502D4319418A250075652D /* ISVertexArray.cpp */; };
 		C9502D49194396150075652D /* ISPassThrough.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9502D47194396150075652D /* ISPassThrough.cpp */; };
+		C95FD736196A763300B73941 /* cyberpunk.png in Resources */ = {isa = PBXBuildFile; fileRef = C95FD735196A763300B73941 /* cyberpunk.png */; };
 		C96528811910355900037819 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = C92BA54519049DCA00CD3821 /* ViewController.mm */; };
 		C96528831910BF6F00037819 /* street.png in Resources */ = {isa = PBXBuildFile; fileRef = C96528821910BF6F00037819 /* street.png */; };
 		C96676861932FEF100F633DC /* ISPipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C96676841932FEF100F633DC /* ISPipeline.cpp */; };
@@ -58,7 +58,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		C91D3FAD195DB1CE00F47B78 /* cyberpunk.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cyberpunk.png; path = ../cyberpunk.png; sourceTree = "<group>"; };
 		C924647119456A8000E4BBEE /* Macro.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Macro.cpp; sourceTree = "<group>"; };
 		C924647219456A8000E4BBEE /* Macro.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Macro.hpp; sourceTree = "<group>"; };
 		C92BA52C19049DCA00CD3821 /* Image Shader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Image Shader.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -97,6 +96,7 @@
 		C9502D4419418A250075652D /* ISVertexArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISVertexArray.h; sourceTree = "<group>"; };
 		C9502D47194396150075652D /* ISPassThrough.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ISPassThrough.cpp; sourceTree = "<group>"; };
 		C9502D48194396150075652D /* ISPassThrough.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISPassThrough.h; sourceTree = "<group>"; };
+		C95FD735196A763300B73941 /* cyberpunk.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cyberpunk.png; sourceTree = "<group>"; };
 		C96528821910BF6F00037819 /* street.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = street.png; sourceTree = "<group>"; };
 		C96676841932FEF100F633DC /* ISPipeline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = ISPipeline.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		C96676851932FEF100F633DC /* ISPipeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ISPipeline.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -203,9 +203,9 @@
 		C92BA53519049DCA00CD3821 /* Image Shader */ = {
 			isa = PBXGroup;
 			children = (
+				C95FD735196A763300B73941 /* cyberpunk.png */,
 				C9502D32193BE7E30075652D /* Image Shader */,
 				C9BC08CD1927E7C900587377 /* page.jpg */,
-				C91D3FAD195DB1CE00F47B78 /* cyberpunk.png */,
 				C924647119456A8000E4BBEE /* Macro.cpp */,
 				C924647219456A8000E4BBEE /* Macro.hpp */,
 				C96528821910BF6F00037819 /* street.png */,
@@ -378,9 +378,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C95FD736196A763300B73941 /* cyberpunk.png in Resources */,
 				C9BC08CE1927E7C900587377 /* page.jpg in Resources */,
 				C92BA54819049DCA00CD3821 /* Images.xcassets in Resources */,
-				C91D3FAE195DB1CE00F47B78 /* cyberpunk.png in Resources */,
 				C94B827C19062B74006A3A6D /* chateu.png in Resources */,
 				C92BA53A19049DCA00CD3821 /* InfoPlist.strings in Resources */,
 				C96528831910BF6F00037819 /* street.png in Resources */,
