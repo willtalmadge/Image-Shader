@@ -57,8 +57,8 @@ static const std::string vertShader = SHADER_STRING
  
  );
 
-//FIXME: is output type always an ISSingleton? Maybe omit that?
-//FIXME: how can I make drawables elegantly take single textures instead of singletons? Or streamline it.
+//TODO: is output type always an ISSingleton? Maybe omit that?
+//TODO: how can I make drawables elegantly take single textures instead of singletons? Or streamline it.
 struct ISPassThroughDrawable : public ISDrawable<ISSingleton, ISSingleton, ISPassThroughDrawable>, ISSingletonBindable {
     typedef ISSingleton InputType;
     using ISDrawableT = ISDrawable<ISSingleton, ISSingleton, ISPassThroughDrawable>;

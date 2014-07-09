@@ -33,10 +33,8 @@
 struct FFTRealTransformNDC : public ISDrawable<ISComplex, ISSingleton, FFTRealTransformNDC>, ISComplexBindable
 {
     using ISDrawableT = ISDrawable<ISComplex, ISSingleton, FFTRealTransformNDC>;
-    typedef ISComplex InputType; //FIXME: when it is building, try to exclude this
     
     enum class OutType { Real, Imag };
-    //TODO: take arguments to the drawable in the constructor
     FFTRealTransformNDC(GLuint width, GLuint height, OutType outType, int direction) : ISDrawableT(width, height), _outType(outType), _orthoMatrixPosition(0) {
         _orthoMatrix = GLKMatrix4MakeOrtho(0.0, _width, 0.0, _height, -1.0, 1.0);
         if (direction == 1) {
@@ -54,7 +52,6 @@ struct FFTRealTransformNDC : public ISDrawable<ISComplex, ISSingleton, FFTRealTr
         return _inputImUP;
     }
     void bindUniforms(ISComplex* inputTuple, ISSingleton* outputTuple) {
-        //TODO: set uniforms
         glUniformMatrix4fv(_orthoMatrixPosition, 1, false, _orthoMatrix.m);
         glUniform1f(_multiplierUP, _multiplier);
     }
@@ -112,12 +109,10 @@ protected:
     GLuint _inputReUP;
     GLuint _inputImUP;
     GLuint _multiplierUP;
-    //TODO: define uniform positions
     
     GLKMatrix4 _orthoMatrix;
     OutType _outType;
     GLfloat _multiplier;
-    //TODO: define argument storage
     static const std::string fragShaderRe;
     static const std::string fragShaderIm;
     static const std::string vertShader;

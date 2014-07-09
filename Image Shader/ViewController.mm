@@ -187,15 +187,11 @@ void readFBRow(GLuint width, GLuint y0)
     }
     delete [] r;
 }
-- (void)viewDidLoad
+- (IBAction)applyFilter:(id)sender
 {
-    [super viewDidLoad];
-
+    
     //Make context, set current
-    EAGLContext* context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
-    [EAGLContext setCurrentContext:context];
-    NSString* path = [[NSBundle mainBundle] pathForResource:@"cyberpunk" ofType:@"png"];
-    UIImage* image = [UIImage imageWithContentsOfFile:path];
+    UIImage* image = _imageView.image;
     NSError* err;
     NSDictionary *options = @{GLKTextureLoaderOriginBottomLeft:@NO}; //Image data not flipped.
     GLKTextureInfo* textureInfo;
@@ -245,7 +241,7 @@ void readFBRow(GLuint width, GLuint y0)
     vector<GLuint> factorsv = collectTwos(factorInteger(h));
     pipeline.transform<ISComplex, ISComplex>(permuteComplex(w/2, h, FFTPermute::Orientation::Rows, factorsv));
     butterflyAll(pipeline, w/2, h, FFTSubBlock::Orientation::Rows, 1, factorsv);
-
+    
     //Gaussian filter
     glClearColor(0.0, 0.0, 0.0, 1.0);
     pipeline.transform<ISComplex, ISComplex>
@@ -262,7 +258,7 @@ void readFBRow(GLuint width, GLuint y0)
         }, FFTGaussianFilter(w/2, h, 50)).result<ISSingleton>();
         output.setup(real, imag);
     });
-
+    
     //Inverse real 2D transform
     pipeline.transform<ISComplex, ISComplex>(permuteComplex(w/2, h, FFTPermute::Orientation::Rows, factorsv));
     butterflyAll(pipeline, w/2, h, FFTSubBlock::Orientation::Rows, -1, factorsv);
@@ -280,6 +276,7 @@ void readFBRow(GLuint width, GLuint y0)
         output.setup(real);
     };
     pipeline.transform<ISComplex, ISSingleton>(selectRealDiscardComplex);
+    glFinish();
     
     GLint readType;
     glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_TYPE, &readType);
@@ -295,7 +292,7 @@ void readFBRow(GLuint width, GLuint y0)
     CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
     CGBitmapInfo bitmapInfo = kCGBitmapByteOrderDefault;
     CGColorRenderingIntent renderingIntent = kCGRenderingIntentDefault;
-
+    
     CGImageRef imageRef = CGImageCreate(w, h, bitsPerComponent, bitsPerPixel, bytesPerRow, colorSpaceRef, bitmapInfo, provider, NULL, NO, renderingIntent);
     
     UIImage *myImage =  [UIImage imageWithCGImage:imageRef] ;
@@ -303,10 +300,20 @@ void readFBRow(GLuint width, GLuint y0)
     CGDataProviderRelease(provider);
     CGImageRelease(imageRef);
     CGColorSpaceRelease(colorSpaceRef);
-    [UIImagePNGRepresentation(myImage) writeToFile:@"/Users/williamtalmadge/Downloads/ISFFT.png" atomically:YES];
+    //[UIImagePNGRepresentation(myImage) writeToFile:@"/Users/williamtalmadge/Downloads/ISFFT.png" atomically:YES];
     
     pipeline.releaseAllCaches();
     pipeline.teardown();
+}
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    //Make context, set current
+    EAGLContext* context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+    [EAGLContext setCurrentContext:context];
+    NSString* path = [[NSBundle mainBundle] pathForResource:@"page" ofType:@"jpg"];
+    UIImage* image = [UIImage imageWithContentsOfFile:path];
+    _imageView.image = image;
 }
 
 - (void)didReceiveMemoryWarning

@@ -26,15 +26,11 @@
 #include "FFTPhaseTable.h"
 
 
-//Write the shaders first. Make the drawable support your shader.
-//Define the type of your drawable
 struct FFTRealTransformHighFreq: public ISDrawable<ISComplex, ISSingleton, FFTRealTransformHighFreq>, ISComplexBindable {
     
     using ISDrawableT = ISDrawable<ISComplex, ISSingleton, FFTRealTransformHighFreq>;
-    typedef ISComplex InputType; //FIXME: when it is building, try to exclude this
     
     enum class OutType { Real, Imag };
-    //TODO: take arguments to the drawable in the constructor
     FFTRealTransformHighFreq(GLuint width, GLuint height, OutType outType, int direction) : ISDrawableT(width, height), _outType(outType), _orthoMatrixPosition(0) {
         _orthoMatrix = GLKMatrix4MakeOrtho(0.0, _width, 0.0, _height, -1.0, 1.0);
         _sign = -1*direction;
@@ -54,7 +50,6 @@ struct FFTRealTransformHighFreq: public ISDrawable<ISComplex, ISSingleton, FFTRe
         ISTextureRef table = FFTPhaseTable::getPhaseTable(_width +1, 2*_width, -1*_sign);
         table->bindToShader(_phaseTableUP, inputTuple->textureUnitsUsed());
     }
-    //TODO: hash parameters that determine geometry or shader source (not uniforms)
     size_t hashImpl() const {
         size_t result = 0;
         if (_outType == OutType::Real) {
@@ -64,7 +59,6 @@ struct FFTRealTransformHighFreq: public ISDrawable<ISComplex, ISSingleton, FFTRe
         }
         return result;
     };
-    //TODO: compare parameters that determine geometry or shader source (not uniforms)
     
     bool compareImpl(const FFTRealTransformHighFreq& rhs) const {
         bool result = true;
@@ -75,16 +69,14 @@ struct FFTRealTransformHighFreq: public ISDrawable<ISComplex, ISSingleton, FFTRe
     void setupGeometry() {
         ISVertexArray* geometry = new ISVertexArray();
         std::vector<GLfloat> vertices;
-        //TODO: construct geometry
         makeGlLookupColumnVarying(vertices, _height,
                                   _width/2, _width,
                                   {1.0f/_width + 0.5f, 0.5f},
                                   {1.0f/_width, 1.0f});
-        //TODO: set attributes
         geometry->addFloatAttribute(0, 3);
         geometry->addFloatAttribute(1, 2);
         geometry->addFloatAttribute(2, 2);
-        //TODO: upload vertices
+
         geometry->upload(vertices);
         _geometry = geometry;
     }
@@ -94,13 +86,11 @@ struct FFTRealTransformHighFreq: public ISDrawable<ISComplex, ISSingleton, FFTRe
             {1, "nIn"},
             {2, "N2mnIn"}
         };
-        //TODO: create shader source string and load shader, use shader cache if possible
         if (_outType == OutType::Real) {
             program->loadShader(fragShaderRe, vertShader, attributeMap);
         } else if (_outType == OutType::Imag) {
             program->loadShader(fragShaderIm, vertShader, attributeMap);
         }
-        //TODO: verify attribute order match those in setupGeometry()
     }
     void resolveUniformPositions() {
         _orthoMatrixPosition = glGetUniformLocation(_program->program(), "orthoMatrix");
@@ -117,12 +107,10 @@ protected:
     GLuint _phaseTableUP;
     GLuint _orthoMatrixPosition;
     GLuint _signUP;
-    //TODO: define uniform positions
     
     GLKMatrix4 _orthoMatrix;
     OutType _outType;
     GLint _sign;
-    //TODO: define argument storage
     
     static const std::string fragShaderRe;
     static const std::string fragShaderIm;

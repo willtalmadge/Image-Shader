@@ -66,7 +66,6 @@ struct FFTPermute : public ISDrawable<ISSingleton, ISSingleton, FFTPermute>, ISS
             return _height;
         }
     }
-    typedef ISSingleton InputType;
     //TODO: abstract _orthoMatrix to base
     FFTPermute(GLuint width, GLuint height, Stride stride, Offset offset, Orientation orientation, std::vector<GLuint> butterflyPlan) : ISDrawableT(width, height), _orthoMatrixPosition(0), _stride(stride), _offset(offset), _orientation(orientation), _butterflyPlan(butterflyPlan) {
         _orthoMatrix = GLKMatrix4MakeOrtho(0.0, _width, 0.0, _height, -1.0, 1.0);
@@ -77,7 +76,7 @@ struct FFTPermute : public ISDrawable<ISSingleton, ISSingleton, FFTPermute>, ISS
     }
     void bindUniforms(ISSingleton* inputTuple, ISSingleton* outputTuple) {
         if (_orientation == Orientation::Cols) {
-            //TODO: this can fire if the source data is a real signal with no factors of 2 in it.
+            //FIXME: this can fire if the source data is a real signal with no factors of 2 in it.
             assert(inputTuple->getTexture()->width() == stride()*outputTuple->getTexture()->width());
         } else if (_orientation == Orientation::Rows) {
             assert(inputTuple->getTexture()->height() == stride()*outputTuple->getTexture()->height());
@@ -143,7 +142,6 @@ struct FFTPermute : public ISDrawable<ISSingleton, ISSingleton, FFTPermute>, ISS
         }
     }
     void setupGeometry() {
-        //TODO: detect orientation
         ISVertexArray* geometry = new ISVertexArray();
         //First reverse the butterfly set so we start from R_0 instead of R_M-1
         reverse(_butterflyPlan.begin(), _butterflyPlan.end());
@@ -163,7 +161,7 @@ struct FFTPermute : public ISDrawable<ISSingleton, ISSingleton, FFTPermute>, ISS
                 GLfloat source = static_cast<GLfloat>(permutationTable[i]);
                 std::vector<GLfloat>
                 quad = makeGlAttributePixelColumn(length(), i, i+1,
-                                                  {0.0, source}, {1.0, source}); //This is a bit confusing but the vert shader actually may swaps these depending on the orientation
+                                                  {0.0, source}, {1.0, source}); //This is a bit confusing but the vert shader actually may swap these depending on the orientation
                 vertices.insert(vertices.end(), quad.begin(), quad.end());
             }
         } else {

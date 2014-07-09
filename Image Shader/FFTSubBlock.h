@@ -87,7 +87,6 @@ struct FFTSubBlock : public ISDrawable<ISComplex, ISSingleton, FFTSubBlock>, ISC
     void releaseCache();
 #pragma mark - ISDrawable implementation
 
-    typedef ISComplex InputType; //FIXME: when it is building, try to exclude this
     FFTSubBlock(GLuint width, GLuint height, Orientation orientation, GLuint butterflySize1, GLuint butterflySize2,
                 GLuint subBlockLength,
                 GLuint subBlockDigitOut, OutType outType, int sign) : ISDrawableT(width, height), _orientation(orientation), _orthoMatrixPosition(0), _butterflySize1(butterflySize1), _butterflySize2(butterflySize2), _subBlockLength(subBlockLength), _subBlockDigitOut(subBlockDigitOut), _sigSize(0), _outType(outType), _inputReUP(0), _inputImUP(0), _phaseCorrectTableUP(0), _isPhaseCorrecting(false), _sign(sign)
