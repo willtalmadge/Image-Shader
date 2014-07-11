@@ -23,18 +23,18 @@
 using namespace std;
 
 GLenum ISTexture::_activeTextureUnit = GL_TEXTURE0;
-std::set<ISTextureRef, ISTexture::cacheCompare>
-ISTexture::_textureCache = std::set<ISTextureRef, ISTexture::cacheCompare>();
+std::set<ISTextureRef, ISTexture::poolCompare>
+ISTexture::_texturePool = std::set<ISTextureRef, ISTexture::poolCompare>();
 
-void ISTexture::releaseCache()
+void ISTexture::releasePool()
 {
-    for (ISTextureRef texture : _textureCache)
+    for (ISTextureRef texture : _texturePool)
     {
         texture->deleteTexture();
         delete texture;
     }
 }
-bool ISTexture::cacheCompare::operator()(ISTextureRef lhs, ISTextureRef rhs) const
+bool ISTexture::poolCompare::operator()(ISTextureRef lhs, ISTextureRef rhs) const
 {
     //If the texture name of one of the textures is 0 then it is assumed
     //we need to find an existing texture, thus the name is ignored in the
@@ -107,13 +107,13 @@ void ISTexture::bindToShader(GLuint shaderPosition, GLuint textureUnitOffset) co
 }
 void ISTexture::setup()
 {
-    auto texture = _textureCache.find(this);
-    DLPRINT("Looking in texture cache (size %zu) for %dx%d (type %d)\n", _textureCache.size(),_width,_height,type());
-    if (texture != _textureCache.end()) {
+    auto texture = _texturePool.find(this);
+    DLPRINT("Looking in texture cache (size %zu) for %dx%d (type %d)\n", _texturePool.size(),_width,_height,type());
+    if (texture != _texturePool.end()) {
         assert((*texture)->isValid());
         DLPRINT("Cache hit for texture %d\n", (*texture)->name());
         _name = (*texture)->name();
-        _textureCache.erase(texture);
+        _texturePool.erase(texture);
         _isValid = true;
     }
     else {
@@ -135,13 +135,13 @@ void ISTexture::recycle() const
     DLPRINT("Caching texture %d\n", _name);
 
 #ifdef DEBUG
-    pair<set<ISTextureRef, cacheCompare>::iterator, bool>
-    result = _textureCache.insert(this);
+    pair<set<ISTextureRef, poolCompare>::iterator, bool>
+    result = _texturePool.insert(this);
     if (!result.second) {
         DLPRINT("Texture already in cache, no insertion made\n");
     }
 #else
-    _textureCache.insert(this);
+    _texturePool.insert(this);
 #endif
 }
 void ISTexture::deleteTexture() const

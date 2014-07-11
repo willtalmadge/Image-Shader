@@ -45,7 +45,7 @@ ISPipeline::ISPipeline(ISTextureTuple* value) : _isRoot(false), _value(unique_pt
 void ISPipeline::releaseAllCaches()
 {
     //Technically this is safe to call at any time, it is not recommended for performance reasons to call until the pipeline is finished
-    ISTexture::releaseCache();
+    ISTexture::releasePool();
     ISDrawableCache::releaseCache();
 }
 

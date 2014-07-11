@@ -29,7 +29,7 @@
 class ISSingleton;
 struct ISTexture {
     typedef const ISTexture* ISTextureRef;
-    static void releaseCache();
+    static void releasePool();
     ISTexture(GLuint width, GLuint height) : _width(width), _height(height), _name(0), _isValid(false) { };
     ISTexture(const ISTexture& texture) : _width(texture._width), _height(texture._height), _name(texture._name), _isValid(texture._isValid) { };
     virtual GLuint format() const = 0;
@@ -44,7 +44,7 @@ struct ISTexture {
     void recycle() const;
     virtual ~ISTexture();
     
-    struct cacheCompare {
+    struct poolCompare {
         bool operator()(ISTextureRef lhs, ISTextureRef rhs) const;
     };
     
@@ -70,7 +70,7 @@ struct ISTexture {
     void swap(ISTexture& other) throw();
 protected:
     static GLenum _activeTextureUnit;
-    static std::set<ISTextureRef, cacheCompare> _textureCache; //TODO: See below
+    static std::set<ISTextureRef, poolCompare> _texturePool; //TODO: See below
     GLuint _width;
     GLuint _height;
     mutable GLuint _name;
