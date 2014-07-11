@@ -448,6 +448,7 @@ string FFTSubBlock::fragShaderSource()
     return s.str();
 }
 #pragma mark - Phase table creation and managment
+//TODO: switch to phase table class
 unordered_map<int, ISTextureRef> FFTSubBlock::_phaseTableCache = unordered_map<int, ISTextureRef>();
 static string phaseTableVertSource = SHADER_STRING
 (
