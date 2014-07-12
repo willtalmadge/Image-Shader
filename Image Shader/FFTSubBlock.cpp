@@ -17,7 +17,7 @@
  */
 
 #include "FFTSubBlock.h"
-
+#include "ISRe16Rgba.h"
 
 using namespace std;
 
@@ -489,7 +489,7 @@ ISTextureRef FFTSubBlock::renderPhaseTable(GLuint sigSize, int sign)
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     glClearColor(1.0, 0.0, 0.0, 1.0);
     glViewport(0, 0, sigSize, 64);
-    ISTextureRef table = ISRe16Rgba::make(sigSize, 64);
+    ISTextureRef table = ISRe16Rgba<>::make(sigSize, 64);
     table->attachToFramebuffer(framebuffer);
     ISShaderProgram tableProgram;
     tableProgram.loadShader(phaseTableFragSource, phaseTableVertSource, {

@@ -21,7 +21,7 @@
 #include "Macro.hpp"
 #include "ISVertexArray.h"
 #include "ISDrawable.h"
-
+#include "ISRe16Rgba.h"
 using namespace std;
 namespace std {
     template<>
@@ -87,7 +87,7 @@ ISTextureRef FFTPhaseTable::renderPhaseTable(GLuint sigSize, GLfloat period, int
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     glClearColor(1.0, 0.0, 0.0, 1.0);
     glViewport(0, 0, sigSize, 1);
-    ISTextureRef table = ISRe16Rgba::make(sigSize, 1);
+    ISTextureRef table = ISRe16Rgba<>::make(sigSize, 1);
     table->attachToFramebuffer(framebuffer);
     ISShaderProgram tableProgram;
     tableProgram.loadShader(phaseTableFragSource, phaseTableVertSource, {

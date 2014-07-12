@@ -167,21 +167,5 @@ ISTexture::~ISTexture()
 {
     //glDeleteTextures(1, &_name);
 }
-const ISURe8Rgba* ISURe8Rgba::fromExisting(GLuint name, GLuint width, GLuint height, GLenum type)
-{
-    assert(glIsTexture(name));
-    assert(type == GL_UNSIGNED_BYTE);
-    ISURe8Rgba* result = new ISURe8Rgba(width, height);
-    result->_name = name;
-    result->_isValid = true;
-    return result;
-}
-const ISRe16Rgba* ISRe16Rgba::fromExisting(GLuint name, GLuint width, GLuint height, GLenum type)
-{
-    assert(glIsTexture(name));
-    assert(type == GL_HALF_FLOAT_OES);
-    ISRe16Rgba* result = new ISRe16Rgba(width, height);
-    result->_name = name;
-    result->_isValid = true;
-    return result;
-}
+
+

@@ -35,7 +35,7 @@ struct ISTexture {
     virtual GLuint format() const = 0;
     virtual GLuint type() const = 0;
     
-    void setup();
+    virtual void setup();
     void attachToFramebuffer() const;
     void attachToFramebuffer(GLuint framebuffer) const;
     void detach() const;
@@ -60,7 +60,7 @@ struct ISTexture {
         }
     };
     bool isValid() const { return _isValid; };
-    void deleteTexture() const;
+    virtual void deleteTexture() const;
     ISSingleton* asSingleton() const;
     template<class T>
     T& operator=(T rhs) {
@@ -77,29 +77,6 @@ protected:
     mutable GLuint _isValid;
 };
 typedef ISTexture::ISTextureRef ISTextureRef;
-
-struct ISURe8Rgba : public ISTexture {
-    ISURe8Rgba(GLuint width, GLuint height) : ISTexture(width, height) { };
-    virtual GLuint format() const { return GL_RGBA; };
-    virtual GLuint type() const { return GL_UNSIGNED_BYTE; };
-    static const ISURe8Rgba* make(GLuint width, GLuint height) {
-        ISURe8Rgba* result = new ISURe8Rgba(width, height);
-        result->setup();
-        return result;
-    }
-    static const ISURe8Rgba* fromExisting(GLuint name, GLuint width, GLuint height, GLenum type);
-};
-struct ISRe16Rgba : public ISTexture {
-    ISRe16Rgba(GLuint width, GLuint height) : ISTexture(width, height) { };
-    virtual GLuint format() const { return GL_RGBA; };
-    virtual GLuint type() const { return GL_HALF_FLOAT_OES; };
-    static const ISRe16Rgba* make(GLuint width, GLuint height) {
-        ISRe16Rgba* result = new ISRe16Rgba(width, height);
-        result->setup();
-        return result;
-    }
-    static const ISRe16Rgba* fromExisting(GLuint name, GLuint width, GLuint height, GLenum type);
-};
 
 
 
