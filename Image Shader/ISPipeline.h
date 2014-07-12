@@ -24,30 +24,19 @@
 #include <OpenGLES/ES2/glext.h>
 #include <memory>
 #include "ISTextureTuple.h"
-#include <memory>
+#include "ISSingleton.h"
 
 struct ISPipeline {
-    //Must have a method that takes a lambda expression. This expression
-    //will pass in the current value in the pipeline. The passed function
-    //must return a new object. The transform function will destruct
-    //the old value and perform necessary caching. The sequence is
-    //join (+) fmap f
-    //where join is essentially the destructor
-    //ISPipelines are statically allocated
+    //ISPipelines are stack allocated
+    //I'm using potentially confusing terminology because it is descriptive.
+    //If I say 'bind' without qualifier I mean bind in the sense of binding
+    //memory to some input to make it available for an operation. If I mean
+    //monadic bind I will say as much.
+    //'Working transforms' those that actually write to the framebuffer, can only
+    //output to ISSingleton types because OpenGL can only render to one texture at a time.
+    //This is modeled by forming product morphisms that sequence operations and form product types.
     static void releaseAllCaches();
-    /*
-    template<class InputTupleT, class OutputTupleT>
-    void transform(std::function<OutputTupleT *(InputTupleT *)> transformer) {
-        assert(_rootInitialized);
-        assert(static_cast<InputTupleT*>(_value) == dynamic_cast<InputTupleT*>(_value)); //Catch wrong tuple pointer
-        //this is a monadic bind
-        
-        OutputTupleT* temp = transformer(static_cast<InputTupleT*>(_value));
-        temp->join(_value);
-        //Because this is a monad, previous _value is gauranteed to not be needed by this point so it can be deleted.
-        delete _value;
-        _value = temp;
-    }*/
+
     template<class InputTupleT, class OutputTupleT>
     void transform(std::function<void (InputTupleT&, OutputTupleT&)> transformer) {
         assert(_value);
@@ -65,24 +54,19 @@ struct ISPipeline {
         }
     }
 
-    template<class InputTupleT, class OutputTupleT, class DrawableT>
-    ISPipeline& transform(std::function<void (InputTupleT&, OutputTupleT&)> transformer, DrawableT&& drawable) {
+    //TODO: supporting pbuffers requires support for rebaseable textures, in turn this requires providing the concrete texture type as a template parameter and not allowing transformers to touch texture creation directly.
+    template<class InputTupleT, class OutputTextureT, class DrawableT>
+    ISPipeline& transform(GLuint width, GLuint height, DrawableT&& drawable) {
         assert(_rootInitialized);
         assert(_value);
         ISTextureTuple* ptr = _value.release();
         assert(ptr);
         assert(static_cast<InputTupleT*>(ptr) == dynamic_cast<InputTupleT*>(ptr)); //Your template arguments are wrong somewhere
-        std::unique_ptr<OutputTupleT> output(new OutputTupleT);
-        
-        //FIXME: rework this
-        _rootInitialized = false;
-        glBindFramebuffer(GL_FRAMEBUFFER, 0); //Make your own framebuffer!
-        drawable.glMonadEscapeHatch(); //You're on your own here
-        glBindFramebuffer(GL_FRAMEBUFFER, _framebufferName);
-        _rootInitialized = true;
-        
-        transformer(static_cast<InputTupleT&>(*ptr), static_cast<OutputTupleT&>(*output));
-        OutputTupleT* outputPtr = output.release();
+        std::unique_ptr<ISSingleton> output(new ISSingleton);
+        //TODO: build a model for this memory management scheme and try to make it more comprehensible and manifest that it needs to be done this way
+
+        output->setup<OutputTextureT>(width, height);
+        ISSingleton* outputPtr = output.release();
         
         drawable.bind(static_cast<InputTupleT*>(ptr), outputPtr);
         outputPtr->attach();
@@ -101,19 +85,18 @@ struct ISPipeline {
     /////////////////
     //For multipass
     /////////////////
-    //Should rename this something like "multipassTransform" this method forms product morphisms from drawable passes, it's not bind
-    template<class InputTupleT, class OutputTupleT>
-    ISPipeline& transform(std::function<void (OutputTupleT&)> outputSetup,
-                          std::function<void (OutputTupleT&, ISPipeline&)> transformer) {
+    //Should rename this something like "multipassTransform" this combinator forms product morphisms from drawable passes
+    template<class InputTupleT, class OutputTextureT>
+    ISPipeline& multipassTransform(GLuint width, GLuint height, std::function<void (ISSingleton&, ISPipeline&)> transformer) {
         
         assert(_rootInitialized);
         assert(_value);
         
-        OutputTupleT* output = new OutputTupleT;
-        outputSetup(static_cast<OutputTupleT&>(*output));
+        ISSingleton* output = new ISSingleton;
+        output->setup<OutputTextureT>(width, height);
         output->attach();
         glClear(GL_COLOR_BUFFER_BIT);
-        transformer(static_cast<OutputTupleT&>(*output), *this);
+        transformer(static_cast<ISSingleton&>(*output), *this);
         
         ISTextureTuple* ptr = _value.release();
         assert(ptr);
@@ -125,21 +108,14 @@ struct ISPipeline {
         }
         return *this;
     }
-    template<class InputTupleT, class OutputTupleT, class DrawableT>
-    ISPipeline& drawablePass(OutputTupleT& output, DrawableT&& drawable) {
+    template<class InputTupleT, class DrawableT>
+    ISPipeline& drawablePass(ISSingleton& output, DrawableT&& drawable) {
         assert(_rootInitialized);
         assert(_value);
         ISTextureTuple* inputPtr = _value.release();
         assert(inputPtr);
         assert(static_cast<InputTupleT*>(inputPtr) == dynamic_cast<InputTupleT*>(inputPtr)); //Your template arguments are wrong somewhere
         
-        /*
-        _rootInitialized = false;
-        glBindFramebuffer(GL_FRAMEBUFFER, 0); //Make your own framebuffer!
-        drawable.glMonadEscapeHatch(); //You're on your own here
-        glBindFramebuffer(GL_FRAMEBUFFER, _framebufferName);
-        _rootInitialized = true;
-        */
         drawable.bind(static_cast<InputTupleT*>(inputPtr), &output);
         //Have to bind without reattaching, reattach requires a clear
         drawable.draw();

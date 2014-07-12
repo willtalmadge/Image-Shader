@@ -28,6 +28,8 @@
 #import "FFTRealTransformLowFreq.h"
 #import "FFTRealTransformHighFreq.h"
 #import "FFTGaussianFilter.h"
+#import "ISURe8Rgba.h"
+#import "ISRe16Rgba.h"
 
 using namespace std;
 
@@ -50,22 +52,20 @@ function<void (ISSingleton&, ISComplex&)> permuteEvenToRealAndOddToImag(GLuint w
 {
     return [=] (ISSingleton& input, ISComplex& output) {
         unique_ptr<ISSingleton> even =
-        input.pipeline().transform<ISSingleton, ISSingleton, FFTPermute>
-        ([=] (ISSingleton& input, ISSingleton& output) {
-            output.setup<ISRe16Rgba>(width, height);
-        }, FFTPermute(width, height,
-                      FFTPermute::Stride::SkipOne,
-                      FFTPermute::Offset::Zero,
-                      orientation, plan)
+        input.pipeline().transform<ISSingleton, ISRe16Rgba<>, FFTPermute>
+        (width, height,
+         FFTPermute(width, height,
+                    FFTPermute::Stride::SkipOne,
+                    FFTPermute::Offset::Zero,
+                    orientation, plan)
          ).result<ISSingleton>();
         unique_ptr<ISSingleton> odd =
-        input.pipeline().transform<ISSingleton, ISSingleton, FFTPermute>
-        ([=] (ISSingleton& input, ISSingleton& output) {
-            output.setup<ISRe16Rgba>(width, height);
-        }, FFTPermute(width, height,
-                      FFTPermute::Stride::SkipOne,
-                      FFTPermute::Offset::One,
-                      orientation, plan)
+        input.pipeline().transform<ISSingleton, ISRe16Rgba<>, FFTPermute>
+        (width, height,
+         FFTPermute(width, height,
+                    FFTPermute::Stride::SkipOne,
+                    FFTPermute::Offset::One,
+                    orientation, plan)
          ).result<ISSingleton>();
         output.setup(even, odd);
     };
@@ -75,22 +75,20 @@ function<void (ISComplex&, ISComplex&)> permuteComplex(GLuint width, GLuint heig
 {
     return [=] (ISComplex& input, ISComplex& output) {
         unique_ptr<ISSingleton> real =
-        input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISSingleton, FFTPermute>
-        ([=] (ISSingleton& input, ISSingleton& output) {
-            output.setup<ISRe16Rgba>(width, height);
-        }, FFTPermute(width, height,
-                      FFTPermute::Stride::SkipNone,
-                      FFTPermute::Offset::Zero,
-                      orientation, plan)
+        input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba<>, FFTPermute>
+        (width, height,
+         FFTPermute(width, height,
+                    FFTPermute::Stride::SkipNone,
+                    FFTPermute::Offset::Zero,
+                    orientation, plan)
          ).result<ISSingleton>();
         unique_ptr<ISSingleton> imag =
-        input.getImag()->asSingleton()->pipeline().transform<ISSingleton, ISSingleton, FFTPermute>
-        ([=] (ISSingleton& input, ISSingleton& output) {
-            output.setup<ISRe16Rgba>(width, height);
-        }, FFTPermute(width, height,
-                      FFTPermute::Stride::SkipNone,
-                      FFTPermute::Offset::Zero,
-                      orientation, plan)
+        input.getImag()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba<>, FFTPermute>
+        (width, height,
+         FFTPermute(width, height,
+                    FFTPermute::Stride::SkipNone,
+                    FFTPermute::Offset::Zero,
+                    orientation, plan)
          ).result<ISSingleton>();
         output.setup(real, imag);
     };
@@ -101,24 +99,20 @@ function<void (ISComplex&, ISComplex&)> butterflyStage(GLuint width, GLuint heig
     return [=] (ISComplex& input, ISComplex& output) {
         
         unique_ptr<ISSingleton> real =
-        input.pipeline().transform<ISComplex, ISSingleton>
-        ([=] (ISSingleton& output) {
-            output.setup<ISRe16Rgba>(width, height);
-        },
+        input.pipeline().multipassTransform<ISComplex, ISRe16Rgba<> >
+        (width, height,
          [=] (ISSingleton& output, ISPipeline& pipeline){
              for (GLuint s = 0; s < b1; s++) {
-                 pipeline.drawablePass<ISComplex, ISSingleton, FFTSubBlock>(output, FFTSubBlock(width, height, orientation, b1, b2, blockCapacity, s, FFTSubBlock::OutType::Real, sign));
+                 pipeline.drawablePass<ISComplex>(output, FFTSubBlock(width, height, orientation, b1, b2, blockCapacity, s, FFTSubBlock::OutType::Real, sign));
              }
          }).result<ISSingleton>();
         
         unique_ptr<ISSingleton> imag =
-        input.pipeline().transform<ISComplex, ISSingleton>
-        ([=] (ISSingleton& output) {
-            output.setup<ISRe16Rgba>(width, height);
-        },
+        input.pipeline().multipassTransform<ISComplex, ISRe16Rgba<> >
+        (width, height,
          [=] (ISSingleton& output, ISPipeline& pipeline){
              for (GLuint s = 0; s < b1; s++) {
-                 pipeline.drawablePass<ISComplex, ISSingleton, FFTSubBlock>(output, FFTSubBlock(width, height, orientation, b1, b2, blockCapacity, s, FFTSubBlock::OutType::Imag, sign));
+                 pipeline.drawablePass<ISComplex>(output, FFTSubBlock(width, height, orientation, b1, b2, blockCapacity, s, FFTSubBlock::OutType::Imag, sign));
              }
          }).result<ISSingleton>();
         output.setup(real, imag);
@@ -145,24 +139,22 @@ function<void (ISComplex&, ISComplex&)> realTransform(GLuint width, GLuint heigh
 {
     return [=] (ISComplex& input, ISComplex& output) {
         unique_ptr<ISSingleton> real =
-        input.pipeline().transform<ISComplex, ISSingleton>
-        ([=] (ISSingleton& output) {
-            output.setup<ISRe16Rgba>(width, height);
-        }, [=] (ISSingleton& output, ISPipeline& pipeline) {
-            pipeline.drawablePass<ISComplex, ISSingleton>(output, FFTRealTransformNDC(width, height, FFTRealTransformNDC::OutType::Real, direction));
-            pipeline.drawablePass<ISComplex, ISSingleton>(output, FFTRealTransformHighFreq(width, height, FFTRealTransformHighFreq::OutType::Real, direction));
-            pipeline.drawablePass<ISComplex, ISSingleton>(output, FFTRealTransformLowFreq(width, height, FFTRealTransformLowFreq::OutType::Real, direction));
+        input.pipeline().multipassTransform<ISComplex, ISRe16Rgba<> >
+        (width, height,
+         [=] (ISSingleton& output, ISPipeline& pipeline) {
+            pipeline.drawablePass<ISComplex>(output, FFTRealTransformNDC(width, height, FFTRealTransformNDC::OutType::Real, direction));
+            pipeline.drawablePass<ISComplex>(output, FFTRealTransformHighFreq(width, height, FFTRealTransformHighFreq::OutType::Real, direction));
+            pipeline.drawablePass<ISComplex>(output, FFTRealTransformLowFreq(width, height, FFTRealTransformLowFreq::OutType::Real, direction));
 
         }).result<ISSingleton>();
         
         unique_ptr<ISSingleton> imag =
-        input.pipeline().transform<ISComplex, ISSingleton>
-        ([=] (ISSingleton& output) {
-            output.setup<ISRe16Rgba>(width, height);
-        }, [=] (ISSingleton& output, ISPipeline& pipeline) {
-            pipeline.drawablePass<ISComplex, ISSingleton>(output, FFTRealTransformNDC(width, height, FFTRealTransformNDC::OutType::Imag, direction));
-            pipeline.drawablePass<ISComplex, ISSingleton>(output, FFTRealTransformLowFreq(width, height, FFTRealTransformLowFreq::OutType::Imag, direction));
-            pipeline.drawablePass<ISComplex, ISSingleton>(output, FFTRealTransformHighFreq(width, height, FFTRealTransformHighFreq::OutType::Imag, direction));
+        input.pipeline().multipassTransform<ISComplex, ISRe16Rgba<> >
+        (width, height,
+         [=] (ISSingleton& output, ISPipeline& pipeline) {
+            pipeline.drawablePass<ISComplex>(output, FFTRealTransformNDC(width, height, FFTRealTransformNDC::OutType::Imag, direction));
+            pipeline.drawablePass<ISComplex>(output, FFTRealTransformLowFreq(width, height, FFTRealTransformLowFreq::OutType::Imag, direction));
+            pipeline.drawablePass<ISComplex>(output, FFTRealTransformHighFreq(width, height, FFTRealTransformHighFreq::OutType::Imag, direction));
         }).result<ISSingleton>();
         output.setup(real, imag);
     };
@@ -204,7 +196,7 @@ void readFBRow(GLuint width, GLuint y0)
         cout << num << ", ";
     }
     
-    ISTextureRef tex = ISURe8Rgba::fromExisting(textureInfo.name, w, h, GL_UNSIGNED_BYTE);
+    ISTextureRef tex = ISURe8Rgba<>::fromExisting(textureInfo.name, w, h, GL_UNSIGNED_BYTE);
     ISPipeline pipeline(unique_ptr<ISSingleton>(tex->asSingleton()));
     pipeline.setupRoot();
     
@@ -222,16 +214,14 @@ void readFBRow(GLuint width, GLuint y0)
     
     auto scale = [=] (ISComplex& input, ISComplex& output) {
         unique_ptr<ISSingleton> real =
-        input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISSingleton, ISPassThroughDrawable>
-        ([=](ISSingleton& input, ISSingleton& output) {
-            output.setup<ISRe16Rgba>(w/2, h);
-        }, ISPassThroughDrawable(w/2, h, 2.0/w)).result<ISSingleton>();
+        input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba<>, ISPassThroughDrawable>
+        (w/2, h,
+         ISPassThroughDrawable(w/2, h, 2.0/w)).result<ISSingleton>();
         
         unique_ptr<ISSingleton> imag =
-        input.getImag()->asSingleton()->pipeline().transform<ISSingleton, ISSingleton, ISPassThroughDrawable>
-        ([=](ISSingleton& input, ISSingleton& output) {
-            output.setup<ISRe16Rgba>(w/2, h);
-        }, ISPassThroughDrawable(w/2, h, 2.0/w)).result<ISSingleton>();
+        input.getImag()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba<>, ISPassThroughDrawable>
+        (w/2, h,
+         ISPassThroughDrawable(w/2, h, 2.0/w)).result<ISSingleton>();
         output.setup(real, imag);
     };
     //Without intermediate scaling the values are saturating the half floats on the phone
@@ -247,15 +237,13 @@ void readFBRow(GLuint width, GLuint y0)
     pipeline.transform<ISComplex, ISComplex>
     ([=](ISComplex& input, ISComplex& output) {
         unique_ptr<ISSingleton> real =
-        input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISSingleton, FFTGaussianFilter>
-        ([=] (ISSingleton& input, ISSingleton& output) {
-            output.setup<ISRe16Rgba>(w/2, h);
-        }, FFTGaussianFilter(w/2, h, 50)).result<ISSingleton>();
+        input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba<>, FFTGaussianFilter>
+        (w/2, h,
+         FFTGaussianFilter(w/2, h, 50)).result<ISSingleton>();
         unique_ptr<ISSingleton> imag =
-        input.getImag()->asSingleton()->pipeline().transform<ISSingleton, ISSingleton, FFTGaussianFilter>
-        ([=] (ISSingleton& input, ISSingleton& output) {
-            output.setup<ISRe16Rgba>(w/2, h);
-        }, FFTGaussianFilter(w/2, h, 50)).result<ISSingleton>();
+        input.getImag()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba<>, FFTGaussianFilter>
+        (w/2, h,
+         FFTGaussianFilter(w/2, h, 50)).result<ISSingleton>();
         output.setup(real, imag);
     });
     
@@ -269,10 +257,9 @@ void readFBRow(GLuint width, GLuint y0)
     //Read out real channel result
     auto selectRealDiscardComplex = [=] (ISComplex& input, ISSingleton& output) {
         unique_ptr<ISSingleton> real =
-        input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISSingleton, ISPassThroughDrawable>
-        ([=] (ISSingleton& input, ISSingleton& output) {
-            output.setup<ISURe8Rgba>(w, h);
-        }, ISPassThroughDrawable(w, h, 1.0f/h)).result<ISSingleton>();
+        input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISURe8Rgba<>, ISPassThroughDrawable>
+        (w, h,
+         ISPassThroughDrawable(w, h, 1.0f/h)).result<ISSingleton>();
         output.setup(real);
     };
     pipeline.transform<ISComplex, ISSingleton>(selectRealDiscardComplex);
