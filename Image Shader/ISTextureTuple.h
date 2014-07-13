@@ -30,6 +30,7 @@ struct ISTextureTuple {
     virtual GLuint textureUnitsUsed() const = 0;
     virtual ~ISTextureTuple();
     ISPipeline pipeline();
+    void map(std::function<void (ISTextureRef)> f); //TODO: consider making this only accessible to ISPipeline
 protected:
     std::vector<ISTextureRef> _elements;
 };

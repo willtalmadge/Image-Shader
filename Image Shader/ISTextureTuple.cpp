@@ -52,6 +52,12 @@ ISPipeline ISTextureTuple::pipeline()
     ISPipeline result(this);
     return result;
 }
+void ISTextureTuple::map(std::function<void (ISTextureRef)> f)
+{
+    for (ISTextureRef texture : _elements) {
+        f(texture);
+    }
+}
 ISTextureTuple::~ISTextureTuple()
 {
 
