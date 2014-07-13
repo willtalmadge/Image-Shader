@@ -55,7 +55,7 @@ struct ISPipeline {
     }
 
     //TODO: supporting pbuffers requires support for rebaseable textures, in turn this requires providing the concrete texture type as a template parameter and not allowing transformers to touch texture creation directly.
-    template<class InputTupleT, class OutputTextureT, class DrawableT>
+    template<class InputTupleT, template <class> class OutputTextureT, class DrawableT>
     ISPipeline& transform(GLuint width, GLuint height, DrawableT&& drawable) {
         assert(_rootInitialized);
         assert(_value);
@@ -65,7 +65,7 @@ struct ISPipeline {
         std::unique_ptr<ISSingleton> output(new ISSingleton);
         //TODO: build a model for this memory management scheme and try to make it more comprehensible and manifest that it needs to be done this way
 
-        output->setup<OutputTextureT>(width, height);
+        output->setup<OutputTextureT<ISTexture> >(width, height);
         ISSingleton* outputPtr = output.release();
         
         drawable.bind(static_cast<InputTupleT*>(ptr), outputPtr);
@@ -85,15 +85,15 @@ struct ISPipeline {
     /////////////////
     //For multipass
     /////////////////
-    //Should rename this something like "multipassTransform" this combinator forms product morphisms from drawable passes
-    template<class InputTupleT, class OutputTextureT>
+
+    template<class InputTupleT, template <class> class OutputTextureT>
     ISPipeline& multipassTransform(GLuint width, GLuint height, std::function<void (ISSingleton&, ISPipeline&)> transformer) {
         
         assert(_rootInitialized);
         assert(_value);
         
         ISSingleton* output = new ISSingleton;
-        output->setup<OutputTextureT>(width, height);
+        output->setup<OutputTextureT<ISTexture> >(width, height);
         output->attach();
         glClear(GL_COLOR_BUFFER_BIT);
         transformer(static_cast<ISSingleton&>(*output), *this);

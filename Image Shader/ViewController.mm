@@ -52,7 +52,7 @@ function<void (ISSingleton&, ISComplex&)> permuteEvenToRealAndOddToImag(GLuint w
 {
     return [=] (ISSingleton& input, ISComplex& output) {
         unique_ptr<ISSingleton> even =
-        input.pipeline().transform<ISSingleton, ISRe16Rgba<>, FFTPermute>
+        input.pipeline().transform<ISSingleton, ISRe16Rgba, FFTPermute>
         (width, height,
          FFTPermute(width, height,
                     FFTPermute::Stride::SkipOne,
@@ -60,7 +60,7 @@ function<void (ISSingleton&, ISComplex&)> permuteEvenToRealAndOddToImag(GLuint w
                     orientation, plan)
          ).result<ISSingleton>();
         unique_ptr<ISSingleton> odd =
-        input.pipeline().transform<ISSingleton, ISRe16Rgba<>, FFTPermute>
+        input.pipeline().transform<ISSingleton, ISRe16Rgba, FFTPermute>
         (width, height,
          FFTPermute(width, height,
                     FFTPermute::Stride::SkipOne,
@@ -75,7 +75,7 @@ function<void (ISComplex&, ISComplex&)> permuteComplex(GLuint width, GLuint heig
 {
     return [=] (ISComplex& input, ISComplex& output) {
         unique_ptr<ISSingleton> real =
-        input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba<>, FFTPermute>
+        input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba, FFTPermute>
         (width, height,
          FFTPermute(width, height,
                     FFTPermute::Stride::SkipNone,
@@ -83,7 +83,7 @@ function<void (ISComplex&, ISComplex&)> permuteComplex(GLuint width, GLuint heig
                     orientation, plan)
          ).result<ISSingleton>();
         unique_ptr<ISSingleton> imag =
-        input.getImag()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba<>, FFTPermute>
+        input.getImag()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba, FFTPermute>
         (width, height,
          FFTPermute(width, height,
                     FFTPermute::Stride::SkipNone,
@@ -99,7 +99,7 @@ function<void (ISComplex&, ISComplex&)> butterflyStage(GLuint width, GLuint heig
     return [=] (ISComplex& input, ISComplex& output) {
         
         unique_ptr<ISSingleton> real =
-        input.pipeline().multipassTransform<ISComplex, ISRe16Rgba<> >
+        input.pipeline().multipassTransform<ISComplex, ISRe16Rgba >
         (width, height,
          [=] (ISSingleton& output, ISPipeline& pipeline){
              for (GLuint s = 0; s < b1; s++) {
@@ -108,7 +108,7 @@ function<void (ISComplex&, ISComplex&)> butterflyStage(GLuint width, GLuint heig
          }).result<ISSingleton>();
         
         unique_ptr<ISSingleton> imag =
-        input.pipeline().multipassTransform<ISComplex, ISRe16Rgba<> >
+        input.pipeline().multipassTransform<ISComplex, ISRe16Rgba >
         (width, height,
          [=] (ISSingleton& output, ISPipeline& pipeline){
              for (GLuint s = 0; s < b1; s++) {
@@ -139,7 +139,7 @@ function<void (ISComplex&, ISComplex&)> realTransform(GLuint width, GLuint heigh
 {
     return [=] (ISComplex& input, ISComplex& output) {
         unique_ptr<ISSingleton> real =
-        input.pipeline().multipassTransform<ISComplex, ISRe16Rgba<> >
+        input.pipeline().multipassTransform<ISComplex, ISRe16Rgba >
         (width, height,
          [=] (ISSingleton& output, ISPipeline& pipeline) {
             pipeline.drawablePass<ISComplex>(output, FFTRealTransformNDC(width, height, FFTRealTransformNDC::OutType::Real, direction));
@@ -149,7 +149,7 @@ function<void (ISComplex&, ISComplex&)> realTransform(GLuint width, GLuint heigh
         }).result<ISSingleton>();
         
         unique_ptr<ISSingleton> imag =
-        input.pipeline().multipassTransform<ISComplex, ISRe16Rgba<> >
+        input.pipeline().multipassTransform<ISComplex, ISRe16Rgba >
         (width, height,
          [=] (ISSingleton& output, ISPipeline& pipeline) {
             pipeline.drawablePass<ISComplex>(output, FFTRealTransformNDC(width, height, FFTRealTransformNDC::OutType::Imag, direction));
@@ -214,12 +214,12 @@ void readFBRow(GLuint width, GLuint y0)
     
     auto scale = [=] (ISComplex& input, ISComplex& output) {
         unique_ptr<ISSingleton> real =
-        input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba<>, ISPassThroughDrawable>
+        input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba, ISPassThroughDrawable>
         (w/2, h,
          ISPassThroughDrawable(w/2, h, 2.0/w)).result<ISSingleton>();
         
         unique_ptr<ISSingleton> imag =
-        input.getImag()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba<>, ISPassThroughDrawable>
+        input.getImag()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba, ISPassThroughDrawable>
         (w/2, h,
          ISPassThroughDrawable(w/2, h, 2.0/w)).result<ISSingleton>();
         output.setup(real, imag);
@@ -237,11 +237,11 @@ void readFBRow(GLuint width, GLuint y0)
     pipeline.transform<ISComplex, ISComplex>
     ([=](ISComplex& input, ISComplex& output) {
         unique_ptr<ISSingleton> real =
-        input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba<>, FFTGaussianFilter>
+        input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba, FFTGaussianFilter>
         (w/2, h,
          FFTGaussianFilter(w/2, h, 50)).result<ISSingleton>();
         unique_ptr<ISSingleton> imag =
-        input.getImag()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba<>, FFTGaussianFilter>
+        input.getImag()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba, FFTGaussianFilter>
         (w/2, h,
          FFTGaussianFilter(w/2, h, 50)).result<ISSingleton>();
         output.setup(real, imag);
@@ -257,7 +257,7 @@ void readFBRow(GLuint width, GLuint y0)
     //Read out real channel result
     auto selectRealDiscardComplex = [=] (ISComplex& input, ISSingleton& output) {
         unique_ptr<ISSingleton> real =
-        input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISURe8Rgba<>, ISPassThroughDrawable>
+        input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISURe8Rgba, ISPassThroughDrawable>
         (w, h,
          ISPassThroughDrawable(w, h, 1.0f/h)).result<ISSingleton>();
         output.setup(real);
