@@ -414,6 +414,7 @@ string FFTSubBlock::fragShaderSource()
     }
     s << "uniform highp sampler2D inputRe;" << endl;
     s << "uniform highp sampler2D inputIm;" << endl;
+    s << "const highp float k = 1.0/sqrt(" << _butterflySize1 << ".0);" << endl;
     s << "void main()" << endl;
     s << "{" << endl;
     repeatExp(inputTexLookupExp, s, _butterflySize1);
@@ -442,7 +443,7 @@ string FFTSubBlock::fragShaderSource()
             butterflyIm(s, _butterflySize1, _subBlockDigitOut, _sign);
         }
     }
-    s << "gl_FragColor = result;" << endl;
+    s << "gl_FragColor = k*result;" << endl;
     s << "}" << endl;
     DLPRINT("%s\n", s.str().c_str());
     return s.str();
