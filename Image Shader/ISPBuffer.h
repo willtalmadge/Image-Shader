@@ -22,21 +22,22 @@
 #include "ISTexture.h"
 #include <CoreVideo/CoreVideo.h>
 
-struct ISPBuffer : ISTexture {
+struct ISPBuffer : public ISTexture {
+    typedef const ISPBuffer* ISPBufferRef;
     ISPBuffer(GLuint width, GLuint height) : ISTexture(width, height), _baseAddress(NULL), _pBuffer(NULL), _texture(NULL), _textureCache(NULL) { }
     void setup();
     void deleteTexture() const;
-    void* baseAddress();
-    void bindBaseAddress();
-    void unbindBaseAddres();
-    //TODO: Implement a bind that unlocks the memory address to a lambda
-    static CVEAGLContext context;
+    void* baseAddress() const;
+    void bindBaseAddress() const;
+    void unbindBaseAddress() const;
+
 protected:
     //How to pass in the context? It is a core video object. Use a static variable and assert it to ensure it is set. We require a buffered pipeline. Make it depend on the bufferable pipeline static context variable.
     //How to select the texture init type? Base class knows how to translate type() result.
-    void* _baseAddress;
+    mutable void* _baseAddress;
     CVPixelBufferRef _pBuffer;
     CVOpenGLESTextureRef _texture;
     CVOpenGLESTextureCacheRef _textureCache;
 };
+typedef ISPBuffer::ISPBufferRef ISPBufferRef;
 #endif /* defined(__Image_Shader__ISPBuffer__) */
