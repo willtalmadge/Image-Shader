@@ -22,7 +22,7 @@
 #import "ISPassThroughDrawable.h"
 #import "FFTPermute.h"
 #import "FFTSubBlock.h"
-#import "ISPipeline.h"
+#import "ISPipelineBufferable.h"
 #import "ISComplex.h"
 #import "FFTRealTransformNDC.h"
 #import "FFTRealTransformLowFreq.h"
@@ -30,9 +30,10 @@
 #import "FFTGaussianFilter.h"
 #import "ISURe8Rgba.h"
 #import "ISRe16Rgba.h"
-
+#import "half.hpp"
+#import <arm_neon.h>
 using namespace std;
-
+using namespace half_float;
 @interface ViewController ()
 {
 
@@ -48,76 +49,79 @@ void ProviderReleaseData ( void *info, const void *data, size_t size )
     free((void*)data);
 }
 
+template<class TextureBaseT = ISTexture>
 function<void (ISSingleton&, ISComplex&)> permuteEvenToRealAndOddToImag(GLuint width, GLuint height, FFTPermute::Orientation orientation, vector<GLuint> plan)
 {
     return [=] (ISSingleton& input, ISComplex& output) {
         unique_ptr<ISSingleton> even =
-        input.pipeline().transform<ISSingleton, ISRe16Rgba, FFTPermute>
+        input.pipeline().transform<ISSingleton, ISRe16Rgba, FFTPermute, TextureBaseT>
         (width, height,
          FFTPermute(width, height,
                     FFTPermute::Stride::SkipOne,
                     FFTPermute::Offset::Zero,
                     orientation, plan)
-         ).result<ISSingleton>();
+         ).template result<ISSingleton>();
         unique_ptr<ISSingleton> odd =
-        input.pipeline().transform<ISSingleton, ISRe16Rgba, FFTPermute>
+        input.pipeline().transform<ISSingleton, ISRe16Rgba, FFTPermute, TextureBaseT>
         (width, height,
          FFTPermute(width, height,
                     FFTPermute::Stride::SkipOne,
                     FFTPermute::Offset::One,
                     orientation, plan)
-         ).result<ISSingleton>();
+         ).template result<ISSingleton>();
         output.setup(even, odd);
     };
 }
 
+template<class TextureBaseT = ISTexture>
 function<void (ISComplex&, ISComplex&)> permuteComplex(GLuint width, GLuint height, FFTPermute::Orientation orientation, vector<GLuint> plan)
 {
     return [=] (ISComplex& input, ISComplex& output) {
         unique_ptr<ISSingleton> real =
-        input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba, FFTPermute>
+        input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba, FFTPermute, TextureBaseT>
         (width, height,
          FFTPermute(width, height,
                     FFTPermute::Stride::SkipNone,
                     FFTPermute::Offset::Zero,
                     orientation, plan)
-         ).result<ISSingleton>();
+         ).template result<ISSingleton>();
         unique_ptr<ISSingleton> imag =
-        input.getImag()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba, FFTPermute>
+        input.getImag()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba, FFTPermute, TextureBaseT>
         (width, height,
          FFTPermute(width, height,
                     FFTPermute::Stride::SkipNone,
                     FFTPermute::Offset::Zero,
                     orientation, plan)
-         ).result<ISSingleton>();
+         ).template result<ISSingleton>();
         output.setup(real, imag);
     };
 }
-
+template<class TextureBaseT = ISTexture>
 function<void (ISComplex&, ISComplex&)> butterflyStage(GLuint width, GLuint height, FFTSubBlock::Orientation orientation, GLuint b1, GLuint b2, GLuint blockCapacity, int sign)
 {
     return [=] (ISComplex& input, ISComplex& output) {
         
         unique_ptr<ISSingleton> real =
-        input.pipeline().multipassTransform<ISComplex, ISRe16Rgba >
+        input.pipeline().multipassTransform<ISComplex, ISRe16Rgba, TextureBaseT>
         (width, height,
          [=] (ISSingleton& output, ISPipeline& pipeline){
              for (GLuint s = 0; s < b1; s++) {
                  pipeline.drawablePass<ISComplex>(output, FFTSubBlock(width, height, orientation, b1, b2, blockCapacity, s, FFTSubBlock::OutType::Real, sign));
              }
-         }).result<ISSingleton>();
+         }).template result<ISSingleton>();
         
         unique_ptr<ISSingleton> imag =
-        input.pipeline().multipassTransform<ISComplex, ISRe16Rgba >
+        input.pipeline().multipassTransform<ISComplex, ISRe16Rgba, TextureBaseT>
         (width, height,
          [=] (ISSingleton& output, ISPipeline& pipeline){
              for (GLuint s = 0; s < b1; s++) {
                  pipeline.drawablePass<ISComplex>(output, FFTSubBlock(width, height, orientation, b1, b2, blockCapacity, s, FFTSubBlock::OutType::Imag, sign));
              }
-         }).result<ISSingleton>();
+         }).template result<ISSingleton>();
         output.setup(real, imag);
     };
 }
+template<class TextureBaseT = ISTexture>
 void butterflyAll(ISPipeline& pipeline, GLuint width, GLuint height, FFTSubBlock::Orientation orientation, int sign, vector<GLuint> factors)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -130,32 +134,33 @@ void butterflyAll(ISPipeline& pipeline, GLuint width, GLuint height, FFTSubBlock
     
     GLuint blockCapacity = 1;
     for (GLuint b = 0; b < factors.size() - 1; b++) {
-        pipeline.transform<ISComplex, ISComplex>(butterflyStage(width, height, orientation, factors[b], factors[b+1], blockCapacity, sign));
+        pipeline.transform<ISComplex, ISComplex>(butterflyStage<TextureBaseT>(width, height, orientation, factors[b], factors[b+1], blockCapacity, sign));
         blockCapacity*=factors[b];
     }
-    pipeline.transform<ISComplex, ISComplex>(butterflyStage(width, height, orientation, factors.back(), 0, blockCapacity, sign));
+    pipeline.transform<ISComplex, ISComplex>(butterflyStage<TextureBaseT>(width, height, orientation, factors.back(), 0, blockCapacity, sign));
 }
+template<class TextureBaseT = ISTexture>
 function<void (ISComplex&, ISComplex&)> realTransform(GLuint width, GLuint height, int direction)
 {
     return [=] (ISComplex& input, ISComplex& output) {
         unique_ptr<ISSingleton> real =
-        input.pipeline().multipassTransform<ISComplex, ISRe16Rgba >
+        input.pipeline().multipassTransform<ISComplex, ISRe16Rgba, TextureBaseT>
         (width, height,
          [=] (ISSingleton& output, ISPipeline& pipeline) {
             pipeline.drawablePass<ISComplex>(output, FFTRealTransformNDC(width, height, FFTRealTransformNDC::OutType::Real, direction));
             pipeline.drawablePass<ISComplex>(output, FFTRealTransformHighFreq(width, height, FFTRealTransformHighFreq::OutType::Real, direction));
             pipeline.drawablePass<ISComplex>(output, FFTRealTransformLowFreq(width, height, FFTRealTransformLowFreq::OutType::Real, direction));
 
-        }).result<ISSingleton>();
+        }).template result<ISSingleton>();
         
         unique_ptr<ISSingleton> imag =
-        input.pipeline().multipassTransform<ISComplex, ISRe16Rgba >
+        input.pipeline().multipassTransform<ISComplex, ISRe16Rgba, TextureBaseT>
         (width, height,
          [=] (ISSingleton& output, ISPipeline& pipeline) {
             pipeline.drawablePass<ISComplex>(output, FFTRealTransformNDC(width, height, FFTRealTransformNDC::OutType::Imag, direction));
             pipeline.drawablePass<ISComplex>(output, FFTRealTransformLowFreq(width, height, FFTRealTransformLowFreq::OutType::Imag, direction));
             pipeline.drawablePass<ISComplex>(output, FFTRealTransformHighFreq(width, height, FFTRealTransformHighFreq::OutType::Imag, direction));
-        }).result<ISSingleton>();
+        }).template result<ISSingleton>();
         output.setup(real, imag);
     };
 }
@@ -182,7 +187,9 @@ void readFBRow(GLuint width, GLuint y0)
 - (IBAction)applyFilter:(id)sender
 {
     
-    //Make context, set current
+    EAGLContext* context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+    [EAGLContext setCurrentContext:context];
+    
     UIImage* image = _imageView.image;
     NSError* err;
     NSDictionary *options = @{GLKTextureLoaderOriginBottomLeft:@NO}; //Image data not flipped.
@@ -191,13 +198,27 @@ void readFBRow(GLuint width, GLuint y0)
     NSLog(@"Loaded image into %d", textureInfo.name);
     int w = image.size.width;
     int h = image.size.height;
+    
+    auto scale = [=] (ISComplex& input, ISComplex& output) {
+        unique_ptr<ISSingleton> real =
+        input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba, ISPassThroughDrawable, ISTexture>
+        (w/2, h,
+         ISPassThroughDrawable(w/2, h, 2.0/w)).result<ISSingleton>();
+        
+        unique_ptr<ISSingleton> imag =
+        input.getImag()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba, ISPassThroughDrawable, ISTexture>
+        (w/2, h,
+         ISPassThroughDrawable(w/2, h, 2.0/w)).result<ISSingleton>();
+        output.setup(real, imag);
+    };
+    
     vector<GLuint> factors = collectTwos(factorInteger(w/2));
     for (int num : factors) {
         cout << num << ", ";
     }
-    
     ISTextureRef tex = ISURe8Rgba<>::fromExisting(textureInfo.name, w, h, GL_UNSIGNED_BYTE);
-    ISPipeline pipeline(unique_ptr<ISSingleton>(tex->asSingleton()));
+    ISPipelineBufferable pipeline(unique_ptr<ISSingleton>(tex->asSingleton()));
+    pipeline.setContext(context);
     pipeline.setupRoot();
     
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -210,24 +231,25 @@ void readFBRow(GLuint width, GLuint y0)
     //Forward real 2d transform
     pipeline.transform<ISSingleton, ISComplex>(permuteEvenToRealAndOddToImag(w/2, h, FFTPermute::Orientation::Cols, factors));
     butterflyAll(pipeline, w/2, h, FFTSubBlock::Orientation::Cols, 1, factors);
-    pipeline.transform<ISComplex, ISComplex>(realTransform(w/2, h, 1));
+    pipeline.transform<ISComplex, ISComplex>(realTransform<ISPBuffer>(w/2, h, 1));
     
-    auto scale = [=] (ISComplex& input, ISComplex& output) {
-        unique_ptr<ISSingleton> real =
-        input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba, ISPassThroughDrawable>
-        (w/2, h,
-         ISPassThroughDrawable(w/2, h, 2.0/w)).result<ISSingleton>();
-        
-        unique_ptr<ISSingleton> imag =
-        input.getImag()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba, ISPassThroughDrawable>
-        (w/2, h,
-         ISPassThroughDrawable(w/2, h, 2.0/w)).result<ISSingleton>();
-        output.setup(real, imag);
+    struct pix16 {
+        half r;
+        half g;
+        half b;
+        half a;
     };
-    //Without intermediate scaling the values are saturating the half floats on the phone
-    //TODO: This could be integrated into the non phase correcting pass, or multiply by 1/sqrt{R_{M-b} at each stage
-    pipeline.transform<ISComplex, ISComplex>(scale);
-    
+    pipeline.transformBuffer<ISComplex, ISRe16Rgba>
+    (w/2, h,
+     [](ISComplex& input, ISSingleton& output){
+         const ISPBuffer* real = dynamic_cast<const ISPBuffer*>(input.getReal());
+         const ISPBuffer* imag = dynamic_cast<const ISPBuffer*>(input.getImag());
+         pix16* pix = (pix16*)real->baseAddress();
+         float16x4_t* pixels=(float16x4_t*)real->baseAddress();
+         float32x4_t v32 = vcvt_f32_f16(pixels[0]);
+         printf("r%f, g%f, b%f, a%f\n", v32[0], v32[1], v32[2], v32[3]);
+         printf("r%f, g%f, b%f, a%f\n", (float)pix->r, (float)pix->g, (float)pix->b, (float)pix->a);
+     });
     vector<GLuint> factorsv = collectTwos(factorInteger(h));
     pipeline.transform<ISComplex, ISComplex>(permuteComplex(w/2, h, FFTPermute::Orientation::Rows, factorsv));
     butterflyAll(pipeline, w/2, h, FFTSubBlock::Orientation::Rows, 1, factorsv);
@@ -237,11 +259,11 @@ void readFBRow(GLuint width, GLuint y0)
     pipeline.transform<ISComplex, ISComplex>
     ([=](ISComplex& input, ISComplex& output) {
         unique_ptr<ISSingleton> real =
-        input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba, FFTGaussianFilter>
+        input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba, FFTGaussianFilter, ISTexture>
         (w/2, h,
          FFTGaussianFilter(w/2, h, 50)).result<ISSingleton>();
         unique_ptr<ISSingleton> imag =
-        input.getImag()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba, FFTGaussianFilter>
+        input.getImag()->asSingleton()->pipeline().transform<ISSingleton, ISRe16Rgba, FFTGaussianFilter, ISTexture>
         (w/2, h,
          FFTGaussianFilter(w/2, h, 50)).result<ISSingleton>();
         output.setup(real, imag);
@@ -257,9 +279,9 @@ void readFBRow(GLuint width, GLuint y0)
     //Read out real channel result
     auto selectRealDiscardComplex = [=] (ISComplex& input, ISSingleton& output) {
         unique_ptr<ISSingleton> real =
-        input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISURe8Rgba, ISPassThroughDrawable>
+        input.getReal()->asSingleton()->pipeline().transform<ISSingleton, ISURe8Rgba, ISPassThroughDrawable, ISTexture>
         (w, h,
-         ISPassThroughDrawable(w, h, 1.0f/h)).result<ISSingleton>();
+         ISPassThroughDrawable(w, h, 1.0f)).result<ISSingleton>();
         output.setup(real);
     };
     pipeline.transform<ISComplex, ISSingleton>(selectRealDiscardComplex);
@@ -295,10 +317,8 @@ void readFBRow(GLuint width, GLuint y0)
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    //Make context, set current
-    EAGLContext* context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
-    [EAGLContext setCurrentContext:context];
-    NSString* path = [[NSBundle mainBundle] pathForResource:@"page" ofType:@"jpg"];
+
+    NSString* path = [[NSBundle mainBundle] pathForResource:@"andreewallin_small" ofType:@"png"];
     UIImage* image = [UIImage imageWithContentsOfFile:path];
     _imageView.image = image;
 }

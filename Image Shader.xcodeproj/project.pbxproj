@@ -42,6 +42,7 @@
 		C9A4472B1967A9D7008305DF /* FFTRealTransformLowFreq.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A447291967A9D7008305DF /* FFTRealTransformLowFreq.cpp */; };
 		C9A4472E1967A9E5008305DF /* FFTRealTransformHighFreq.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A4472C1967A9E5008305DF /* FFTRealTransformHighFreq.cpp */; };
 		C9AEF451194A937900079299 /* FFTPermute.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9AEF44F194A937900079299 /* FFTPermute.cpp */; };
+		C9B6CA8E19731E2B00F08990 /* andreewallin_small.png in Resources */ = {isa = PBXBuildFile; fileRef = C9B6CA8D19731E2B00F08990 /* andreewallin_small.png */; };
 		C9BC08CE1927E7C900587377 /* page.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C9BC08CD1927E7C900587377 /* page.jpg */; };
 		C9DDC3501935A510003E59C4 /* ISDrawable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9DDC34E1935A510003E59C4 /* ISDrawable.cpp */; };
 		C9E0E548196A0AC000405C47 /* FFTGaussianFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9E0E546196A0AC000405C47 /* FFTGaussianFilter.cpp */; };
@@ -121,6 +122,8 @@
 		C9A4472D1967A9E5008305DF /* FFTRealTransformHighFreq.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTRealTransformHighFreq.h; sourceTree = "<group>"; };
 		C9AEF44F194A937900079299 /* FFTPermute.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTPermute.cpp; sourceTree = "<group>"; };
 		C9AEF450194A937900079299 /* FFTPermute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTPermute.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
+		C9B6CA8D19731E2B00F08990 /* andreewallin_small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = andreewallin_small.png; sourceTree = "<group>"; };
+		C9B6CA921973286000F08990 /* half.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = half.hpp; sourceTree = "<group>"; };
 		C9BC08CD1927E7C900587377 /* page.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = page.jpg; sourceTree = "<group>"; };
 		C9DDC34E1935A510003E59C4 /* ISDrawable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ISDrawable.cpp; sourceTree = "<group>"; };
 		C9DDC34F1935A510003E59C4 /* ISDrawable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ISDrawable.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -170,20 +173,20 @@
 		C91D3FB419612D7C00F47B78 /* FFT */ = {
 			isa = PBXGroup;
 			children = (
-				C9AEF44F194A937900079299 /* FFTPermute.cpp */,
 				C9AEF450194A937900079299 /* FFTPermute.h */,
-				C96C050219516B5000328686 /* FFTSubBlock.cpp */,
+				C9AEF44F194A937900079299 /* FFTPermute.cpp */,
 				C96C050319516B5000328686 /* FFTSubBlock.h */,
-				C9A4471A19628DBF008305DF /* FFTPhaseTable.cpp */,
+				C96C050219516B5000328686 /* FFTSubBlock.cpp */,
 				C9A4471B19628DBF008305DF /* FFTPhaseTable.h */,
+				C9A4471A19628DBF008305DF /* FFTPhaseTable.cpp */,
 				C9A4472719664E6C008305DF /* FFTRealTransformNDC.h */,
 				C9A4472619664E6C008305DF /* FFTRealTransformNDC.cpp */,
 				C9A4472A1967A9D7008305DF /* FFTRealTransformLowFreq.h */,
 				C9A447291967A9D7008305DF /* FFTRealTransformLowFreq.cpp */,
 				C9A4472D1967A9E5008305DF /* FFTRealTransformHighFreq.h */,
 				C9A4472C1967A9E5008305DF /* FFTRealTransformHighFreq.cpp */,
-				C9E0E546196A0AC000405C47 /* FFTGaussianFilter.cpp */,
 				C9E0E547196A0AC000405C47 /* FFTGaussianFilter.h */,
+				C9E0E546196A0AC000405C47 /* FFTGaussianFilter.cpp */,
 			);
 			name = FFT;
 			sourceTree = "<group>";
@@ -233,9 +236,11 @@
 				C924647219456A8000E4BBEE /* Macro.hpp */,
 				C96528821910BF6F00037819 /* street.png */,
 				C94B827B19062B74006A3A6D /* chateu.png */,
+				C9B6CA8D19731E2B00F08990 /* andreewallin_small.png */,
 				C92BA53E19049DCA00CD3821 /* AppDelegate.h */,
 				C92BA53F19049DCA00CD3821 /* AppDelegate.m */,
 				C92BA54119049DCA00CD3821 /* Main.storyboard */,
+				C9B6CA921973286000F08990 /* half.hpp */,
 				C92BA54419049DCA00CD3821 /* ViewController.h */,
 				C92BA54519049DCA00CD3821 /* ViewController.mm */,
 				C92BA54719049DCA00CD3821 /* Images.xcassets */,
@@ -295,6 +300,7 @@
 		C9502D42194186820075652D /* Drawable */ = {
 			isa = PBXGroup;
 			children = (
+				C9B6CA931973775B00F08990 /* FST */,
 				C91D3FB419612D7C00F47B78 /* FFT */,
 				C9DDC34F1935A510003E59C4 /* ISDrawable.h */,
 				C9DDC34E1935A510003E59C4 /* ISDrawable.cpp */,
@@ -339,6 +345,13 @@
 				C9E9CDC71971BF1F005B1BBA /* ISRe16Rgba.cpp */,
 			);
 			name = Texture;
+			sourceTree = "<group>";
+		};
+		C9B6CA931973775B00F08990 /* FST */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = FST;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -420,6 +433,7 @@
 				C95FD736196A763300B73941 /* cyberpunk.png in Resources */,
 				C9BC08CE1927E7C900587377 /* page.jpg in Resources */,
 				C9E9CDCB1971C4FA005B1BBA /* Podfile in Resources */,
+				C9B6CA8E19731E2B00F08990 /* andreewallin_small.png in Resources */,
 				C92BA54819049DCA00CD3821 /* Images.xcassets in Resources */,
 				C94B827C19062B74006A3A6D /* chateu.png in Resources */,
 				C92BA53A19049DCA00CD3821 /* InfoPlist.strings in Resources */,
@@ -597,6 +611,7 @@
 				GCC_PREFIX_HEADER = "Image Shader/Image Shader-Prefix.pch";
 				INFOPLIST_FILE = "Image Shader/Image Shader-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALID_ARCHS = armv7s;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -611,6 +626,7 @@
 				GCC_PREFIX_HEADER = "Image Shader/Image Shader-Prefix.pch";
 				INFOPLIST_FILE = "Image Shader/Image Shader-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				VALID_ARCHS = armv7s;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
