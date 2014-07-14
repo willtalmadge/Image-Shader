@@ -18,10 +18,50 @@
 #ifndef __Image_Shader__ISPipelineBufferable__
 #define __Image_Shader__ISPipelineBufferable__
 
-#include <iostream>
 #include "ISPipeline.h"
+#include "ISSingleton.h"
+#include "ISPBuffer.h"
+#include <CoreVideo/CoreVideo.h>
+#include <functional>
 
-//Needs a draw to buffer
-//Needs a fold to buffer
+struct ISPipelineBufferable : public ISPipeline {
+    ISPipelineBufferable(std::unique_ptr<ISTextureTuple> value) : ISPipeline(std::move(value)) { };
+    ISPipelineBufferable(ISTextureTuple* value) : ISPipeline(value) { };
 
+    template<class InputTupleT, template <class> class OutputTextureT>
+    ISPipelineBufferable& transformBuffer(GLuint width, GLuint height,
+                                          std::function<void (InputTupleT&, ISSingleton&)> transformer) {
+        assert(_value);
+        ISTextureTuple* ptr = _value.release();
+        assert(ptr);
+        assert(static_cast<InputTupleT*>(ptr) == dynamic_cast<InputTupleT*>(ptr)); //Your template arguments are wrong somewhere
+        ptr->map([] (ISTextureRef texture) {
+            assert(static_cast<const ISPBuffer*>(texture) == dynamic_cast<const ISPBuffer*>(texture)); //All inputs must be buffered to call this.
+        });
+        ISSingleton* output = new ISSingleton;
+        output->setup<OutputTextureT<ISPBuffer> >(width, height);
+        ptr->map([] (ISTextureRef texture) {
+            dynamic_cast<ISPBufferRef>(texture)->bindBaseAddress();
+        });
+        output->map([] (ISTextureRef texture) {
+            dynamic_cast<ISPBufferRef>(texture)->bindBaseAddress();
+        });
+        transformer(static_cast<InputTupleT&>(*ptr),  *output);
+        ptr->map([] (ISTextureRef texture) {
+            dynamic_cast<ISPBufferRef>(texture)->unbindBaseAddress();
+        });
+        output->map([] (ISTextureRef texture) {
+            dynamic_cast<ISPBufferRef>(texture)->unbindBaseAddress();
+        });
+        output->join(ptr);
+        _value = std::unique_ptr<ISTextureTuple>(static_cast<ISTextureTuple*>(output));
+        if (_isRoot) {
+            delete ptr;
+        }
+        return *this;
+    }
+    
+    void setContext(CVEAGLContext context) { _context = context; };
+    static CVEAGLContext _context;
+};
 #endif /* defined(__Image_Shader__ISPipelineBufferable__) */

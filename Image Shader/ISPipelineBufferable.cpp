@@ -16,3 +16,5 @@
  */
 
 #include "ISPipelineBufferable.h"
+
+CVEAGLContext ISPipelineBufferable::_context = NULL;
