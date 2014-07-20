@@ -40,9 +40,9 @@ bool ISTexture::poolCompare::operator()(ISTextureRef lhs, ISTextureRef rhs) cons
     //we need to find an existing texture, thus the name is ignored in the
     //comparision. Textures will compare as equivalent with different names
     //with everything else being equal.
-    if (typeid(lhs).hash_code() < typeid(rhs).hash_code()) {
+    if (typeid(*lhs).hash_code() < typeid(*rhs).hash_code()) {
         return true;
-    } else if (typeid(rhs).hash_code() < typeid(rhs).hash_code()) {
+    } else if (typeid(*rhs).hash_code() < typeid(*rhs).hash_code()) {
         return false;
     } else if (lhs->width() < rhs->width()) {
         return true;
@@ -114,7 +114,7 @@ void ISTexture::setup()
     auto texture = _texturePool.find(this);
     DLPRINT("Looking in texture cache (size %zu) for %dx%d (type %d)\n", _texturePool.size(),_width,_height,type());
     //FIXME: The same check is made in ISPBuffer, this check should not be needed
-    if (texture != _texturePool.end() && (typeid(this) == typeid(*texture))) {
+    if (texture != _texturePool.end()) {
         assert((*texture)->isValid());
         DLPRINT("Cache hit for texture %d\n", (*texture)->name());
         _name = (*texture)->name();
