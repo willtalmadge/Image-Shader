@@ -25,7 +25,7 @@ void ISPBuffer::setup()
     std::set<ISTextureRef, poolCompare>::iterator texture = _texturePool.find(this);
     DLPRINT("Looking in texture cache (size %zu) for %dx%d (type %d)\n", _texturePool.size(),_width,_height,type());
     //FIXME: the compare function is comparing ISTexture and ISPBuffer as equal, this check shouldn't be necessary
-    if (texture != _texturePool.end() && (typeid(this) == typeid(*texture))) {
+    if (texture != _texturePool.end()) {
         assert((*texture)->isValid());
         DLPRINT("Cache hit for pbuffer %d\n", (*texture)->name());
         ISPBufferRef pbuffer = dynamic_cast<ISPBufferRef>(*texture);
@@ -40,6 +40,7 @@ void ISPBuffer::setup()
     }
     else {
         //make new pbuffer
+        DLPRINT("%s\n", typeid(*this).name());
         DLPRINT("Cache miss, creating new pbuffer\n");
         CFDictionaryRef empty;
         CFMutableDictionaryRef attrs;
@@ -109,11 +110,27 @@ void* ISPBuffer::baseAddress() const
     assert(_baseAddress); //You are asking for the base address without locking it
     return _baseAddress;
 }
+size_t ISPBuffer::bytesPerRow() const
+{
+    return _bytesPerRow;
+}
 void ISPBuffer::bindBaseAddress() const
 {
     glFinish();
     if (kCVReturnSuccess == CVPixelBufferLockBaseAddress(_pBuffer, 0)) {
         _baseAddress = CVPixelBufferGetBaseAddress(_pBuffer);
+        _bytesPerRow = CVPixelBufferGetBytesPerRow(_pBuffer);
+#ifdef DEBUG
+        size_t left;
+        size_t right;
+        size_t top;
+        size_t bottom;
+        CVPixelBufferGetExtendedPixels(_pBuffer, &left, &right, &top, &bottom);
+        assert(left == 0);
+        assert(right == 0);
+        assert(top == 0);
+        assert(bottom == 0);
+#endif
     } else {
         assert(false); 
     }
@@ -122,4 +139,5 @@ void ISPBuffer::unbindBaseAddress() const
 {
     CVPixelBufferUnlockBaseAddress(_pBuffer, 0);
     _baseAddress = NULL;
+    _bytesPerRow = 0;
 }

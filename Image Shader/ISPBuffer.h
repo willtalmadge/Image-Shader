@@ -24,10 +24,11 @@
 
 struct ISPBuffer : public ISTexture {
     typedef const ISPBuffer* ISPBufferRef;
-    ISPBuffer(GLuint width, GLuint height) : ISTexture(width, height), _baseAddress(NULL), _pBuffer(NULL), _texture(NULL), _textureCache(NULL) { }
+    ISPBuffer(GLuint width, GLuint height) : ISTexture(width, height), _baseAddress(NULL), _pBuffer(NULL), _texture(NULL), _textureCache(NULL), _bytesPerRow(0) { }
     void setup();
     void deleteTexture() const;
     void* baseAddress() const;
+    size_t bytesPerRow() const;
     void bindBaseAddress() const;
     void unbindBaseAddress() const;
 
@@ -35,6 +36,7 @@ protected:
     //How to pass in the context? It is a core video object. Use a static variable and assert it to ensure it is set. We require a buffered pipeline. Make it depend on the bufferable pipeline static context variable.
     //How to select the texture init type? Base class knows how to translate type() result.
     mutable void* _baseAddress;
+    mutable size_t _bytesPerRow;
     CVPixelBufferRef _pBuffer;
     CVOpenGLESTextureRef _texture;
     CVOpenGLESTextureCacheRef _textureCache;
