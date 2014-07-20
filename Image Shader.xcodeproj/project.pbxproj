@@ -43,6 +43,10 @@
 		C9A4472E1967A9E5008305DF /* FFTRealTransformHighFreq.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9A4472C1967A9E5008305DF /* FFTRealTransformHighFreq.cpp */; };
 		C9AEF451194A937900079299 /* FFTPermute.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9AEF44F194A937900079299 /* FFTPermute.cpp */; };
 		C9B6CA8E19731E2B00F08990 /* andreewallin_small.png in Resources */ = {isa = PBXBuildFile; fileRef = C9B6CA8D19731E2B00F08990 /* andreewallin_small.png */; };
+		C9B6CA9619737A8300F08990 /* FSTPrecondition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9B6CA9419737A8300F08990 /* FSTPrecondition.cpp */; };
+		C9B6CA9919737A9000F08990 /* FSTFinalize.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9B6CA9719737A9000F08990 /* FSTFinalize.cpp */; };
+		C9B6CAA2197AC52700F08990 /* ISTextureIndexing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9B6CAA0197AC52700F08990 /* ISTextureIndexing.cpp */; };
+		C9B6CAA8197B145D00F08990 /* FFTTransformers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9B6CAA6197B145D00F08990 /* FFTTransformers.cpp */; };
 		C9BC08CE1927E7C900587377 /* page.jpg in Resources */ = {isa = PBXBuildFile; fileRef = C9BC08CD1927E7C900587377 /* page.jpg */; };
 		C9DDC3501935A510003E59C4 /* ISDrawable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9DDC34E1935A510003E59C4 /* ISDrawable.cpp */; };
 		C9E0E548196A0AC000405C47 /* FFTGaussianFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C9E0E546196A0AC000405C47 /* FFTGaussianFilter.cpp */; };
@@ -124,6 +128,14 @@
 		C9AEF450194A937900079299 /* FFTPermute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTPermute.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		C9B6CA8D19731E2B00F08990 /* andreewallin_small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = andreewallin_small.png; sourceTree = "<group>"; };
 		C9B6CA921973286000F08990 /* half.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = half.hpp; sourceTree = "<group>"; };
+		C9B6CA9419737A8300F08990 /* FSTPrecondition.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FSTPrecondition.cpp; sourceTree = "<group>"; };
+		C9B6CA9519737A8300F08990 /* FSTPrecondition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSTPrecondition.h; sourceTree = "<group>"; };
+		C9B6CA9719737A9000F08990 /* FSTFinalize.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FSTFinalize.cpp; sourceTree = "<group>"; };
+		C9B6CA9819737A9000F08990 /* FSTFinalize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FSTFinalize.h; sourceTree = "<group>"; };
+		C9B6CAA0197AC52700F08990 /* ISTextureIndexing.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ISTextureIndexing.cpp; sourceTree = "<group>"; };
+		C9B6CAA1197AC52700F08990 /* ISTextureIndexing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ISTextureIndexing.h; sourceTree = "<group>"; };
+		C9B6CAA6197B145D00F08990 /* FFTTransformers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFTTransformers.cpp; sourceTree = "<group>"; };
+		C9B6CAA7197B145D00F08990 /* FFTTransformers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFTTransformers.h; sourceTree = "<group>"; };
 		C9BC08CD1927E7C900587377 /* page.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = page.jpg; sourceTree = "<group>"; };
 		C9DDC34E1935A510003E59C4 /* ISDrawable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ISDrawable.cpp; sourceTree = "<group>"; };
 		C9DDC34F1935A510003E59C4 /* ISDrawable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ISDrawable.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -173,6 +185,7 @@
 		C91D3FB419612D7C00F47B78 /* FFT */ = {
 			isa = PBXGroup;
 			children = (
+				C9B6CA931973775B00F08990 /* FST */,
 				C9AEF450194A937900079299 /* FFTPermute.h */,
 				C9AEF44F194A937900079299 /* FFTPermute.cpp */,
 				C96C050319516B5000328686 /* FFTSubBlock.h */,
@@ -187,6 +200,8 @@
 				C9A4472C1967A9E5008305DF /* FFTRealTransformHighFreq.cpp */,
 				C9E0E547196A0AC000405C47 /* FFTGaussianFilter.h */,
 				C9E0E546196A0AC000405C47 /* FFTGaussianFilter.cpp */,
+				C9B6CAA7197B145D00F08990 /* FFTTransformers.h */,
+				C9B6CAA6197B145D00F08990 /* FFTTransformers.cpp */,
 			);
 			name = FFT;
 			sourceTree = "<group>";
@@ -300,12 +315,13 @@
 		C9502D42194186820075652D /* Drawable */ = {
 			isa = PBXGroup;
 			children = (
-				C9B6CA931973775B00F08990 /* FST */,
 				C91D3FB419612D7C00F47B78 /* FFT */,
 				C9DDC34F1935A510003E59C4 /* ISDrawable.h */,
 				C9DDC34E1935A510003E59C4 /* ISDrawable.cpp */,
 				C9502D3A1940353C0075652D /* ISPassThroughDrawable.h */,
 				C9502D391940353C0075652D /* ISPassThroughDrawable.cpp */,
+				C9B6CAA1197AC52700F08990 /* ISTextureIndexing.h */,
+				C9B6CAA0197AC52700F08990 /* ISTextureIndexing.cpp */,
 			);
 			name = Drawable;
 			sourceTree = "<group>";
@@ -350,6 +366,10 @@
 		C9B6CA931973775B00F08990 /* FST */ = {
 			isa = PBXGroup;
 			children = (
+				C9B6CA9519737A8300F08990 /* FSTPrecondition.h */,
+				C9B6CA9419737A8300F08990 /* FSTPrecondition.cpp */,
+				C9B6CA9819737A9000F08990 /* FSTFinalize.h */,
+				C9B6CA9719737A9000F08990 /* FSTFinalize.cpp */,
 			);
 			name = FST;
 			sourceTree = "<group>";
@@ -466,15 +486,19 @@
 				C9E9CDC91971BF1F005B1BBA /* ISRe16Rgba.cpp in Sources */,
 				C9AEF451194A937900079299 /* FFTPermute.cpp in Sources */,
 				C9502D35193BE82C0075652D /* ISTexture.cpp in Sources */,
+				C9B6CA9619737A8300F08990 /* FSTPrecondition.cpp in Sources */,
 				C96C04FE194CE16400328686 /* ISComplex.cpp in Sources */,
 				C9E0E548196A0AC000405C47 /* FFTGaussianFilter.cpp in Sources */,
 				C9502D411940F9020075652D /* ISShaderProgram.cpp in Sources */,
 				C9502D4519418A250075652D /* ISVertexArray.cpp in Sources */,
+				C9B6CAA2197AC52700F08990 /* ISTextureIndexing.cpp in Sources */,
 				C96676861932FEF100F633DC /* ISPipeline.cpp in Sources */,
 				C9E9CDBF19710921005B1BBA /* ISPBuffer.cpp in Sources */,
 				C9DDC3501935A510003E59C4 /* ISDrawable.cpp in Sources */,
 				C92BA54019049DCA00CD3821 /* AppDelegate.m in Sources */,
 				C924647319456A8000E4BBEE /* Macro.cpp in Sources */,
+				C9B6CA9919737A9000F08990 /* FSTFinalize.cpp in Sources */,
+				C9B6CAA8197B145D00F08990 /* FFTTransformers.cpp in Sources */,
 				C92BA53C19049DCA00CD3821 /* main.m in Sources */,
 				C9502D49194396150075652D /* ISPassThrough.cpp in Sources */,
 				C9502D38193BE83C0075652D /* ISTextureTuple.cpp in Sources */,
