@@ -117,6 +117,7 @@ ISTextureIndexer& ISTextureIndexer::from(int rangeStart) {
     return *this;
 }
 ISTextureIndexer& ISTextureIndexer::to(int rangeEnd) {
+    //This is not inclusive, if the for loop has a condition i < N, then rangedEnd should be N, if it has i <= N, then rangeEnd should be N+1
     _rangeEnd = rangeEnd;
     if (_rangeEnd < _rangeStart && _stride > 0) {
         _stride *= -1;
