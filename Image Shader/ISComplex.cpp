@@ -19,14 +19,7 @@
 #include "ISComplex.h"
 #include "ISSingleton.h"
 
-template<class T>
-void ISComplex::setup(GLuint width, GLuint height) {
-    _elements = {NULL, NULL};
-    ISTextureRef real = T::make(width, height);
-    ISTextureRef imag = T::make(width, height);
-    setReal(real);
-    setImag(imag);
-}
+
 void ISComplex::setup(std::unique_ptr<ISSingleton>& real, std::unique_ptr<ISSingleton>& imag) {
     _elements = {NULL, NULL};
     setReal(real->getTexture());

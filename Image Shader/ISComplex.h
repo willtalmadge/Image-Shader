@@ -39,5 +39,12 @@ struct ISComplex : ISTextureTuple {
     void bind(const ISComplexBindable* drawable);
     GLuint textureUnitsUsed() const { return 2; };
 };
-
+template<class T>
+void ISComplex::setup(GLuint width, GLuint height) {
+    _elements = {NULL, NULL};
+    ISTextureRef real = T::make(width, height);
+    ISTextureRef imag = T::make(width, height);
+    setReal(real);
+    setImag(imag);
+}
 #endif /* defined(__Image_Shader__ISComplex__) */
