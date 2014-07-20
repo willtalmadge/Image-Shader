@@ -19,7 +19,6 @@
 #define __Image_Shader__ISPipelineBufferable__
 
 #include "ISPipeline.h"
-#include "ISSingleton.h"
 #include "ISPBuffer.h"
 #include <CoreVideo/CoreVideo.h>
 #include <functional>
@@ -28,9 +27,9 @@ struct ISPipelineBufferable : public ISPipeline {
     ISPipelineBufferable(std::unique_ptr<ISTextureTuple> value) : ISPipeline(std::move(value)) { };
     ISPipelineBufferable(ISTextureTuple* value) : ISPipeline(value) { };
 
-    template<class InputTupleT, template <class> class OutputTextureT>
+    template<class InputTupleT, class OutputTupleT, template <class> class OutputTextureT>
     ISPipelineBufferable& transformBuffer(GLuint width, GLuint height,
-                                          std::function<void (InputTupleT&, ISSingleton&)> transformer) {
+                                          std::function<void (InputTupleT&, OutputTupleT&)> transformer) {
         assert(_value);
         ISTextureTuple* ptr = _value.release();
         assert(ptr);
@@ -38,8 +37,8 @@ struct ISPipelineBufferable : public ISPipeline {
         ptr->map([] (ISTextureRef texture) {
             assert(static_cast<const ISPBuffer*>(texture) == dynamic_cast<const ISPBuffer*>(texture)); //All inputs must be buffered to call this.
         });
-        ISSingleton* output = new ISSingleton;
-        output->setup<OutputTextureT<ISPBuffer> >(width, height);
+        OutputTupleT* output = new OutputTupleT;
+        output->template setup<OutputTextureT<ISPBuffer> >(width, height);
         ptr->map([] (ISTextureRef texture) {
             dynamic_cast<ISPBufferRef>(texture)->bindBaseAddress();
         });
