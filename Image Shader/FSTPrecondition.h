@@ -14,6 +14,7 @@
 #include "ISDrawable.h"
 #include "ISSingleton.h"
 #include "FFTPhaseTable.h"
+#include "ISTextureIndexing.h"
 
 //The values for the first element of the signal must be zero. This shader accomplishes that by ensuring the glClearColor is zeros except for the alpha and simply not drawing anything in the first row/column
 struct FSTPrecondition: public ISDrawable<ISSingleton, ISSingleton, FSTPrecondition>, ISSingletonBindable {
@@ -34,10 +35,8 @@ struct FSTPrecondition: public ISDrawable<ISSingleton, ISSingleton, FSTPrecondit
         ISTextureRef phaseTable;
         if (_orientation == Orientation::Cols) {
             phaseTable = FFTPhaseTable::getPhaseTable(_width, 2*_width, 1);
-            glUniform1i(_isOrientationColUP, 1);
         } else if (_orientation == Orientation::Rows) {
             phaseTable = FFTPhaseTable::getPhaseTable(_height, 2*_height, 1);
-            glUniform1i(_isOrientationColUP, 0);
         }
         phaseTable->bindToShader(_phaseTableUP, inputTuple->textureUnitsUsed());
     }
@@ -59,28 +58,34 @@ struct FSTPrecondition: public ISDrawable<ISSingleton, ISSingleton, FSTPrecondit
     void drawImpl() { };
     void setupGeometry() {
         ISVertexArray* geometry = new ISVertexArray();
-        std::vector<GLfloat> vertices;
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+        ISTextureIndexer jWrite, jRead, NmjRead, stjRead;
         if (_orientation == Orientation::Cols) {
-            makeGlLookupColumnVarying(vertices, _height, 1, _width,
-                                      {1.0f/_width, 1.0f},
-                                      {1.0f, 1.0f/_width});
+            jWrite.writes().from(1).to(_width).alongRows(_width);
+            jRead.reads().from(1).to(_width).alongRows(_width);
+            NmjRead.reads().from(1).to(_width).by(-1).offset(_width).alongRows(_width);
+            stjRead.reads().from(1).to(_width).alongRows(_width);
+            
         } else if (_orientation == Orientation::Rows) {
-            appendGlLookupRow(vertices, _width, 1, _height,
-                              {1.0f/_width, 1.0f},
-                              {1.0f, 1.0f/_width}, {}, {});
+            jWrite.writes().from(1).to(_height).alongCols(_height);
+            jRead.reads().from(1).to(_height).alongCols(_height);
+            NmjRead.reads().from(1).to(_height).by(-1).offset(_height).alongCols(_height);
+            stjRead.reads().from(1).to(_height).alongRows(_height);
         }
-        geometry->addFloatAttribute(0, 3);
-        geometry->addFloatAttribute(1, 2);
-        geometry->addFloatAttribute(2, 2);
-        geometry->upload(vertices);
+        indexerGeometry(geometry, _width, _height, jWrite, {
+            jRead,
+            NmjRead,
+            stjRead
+        });
+
         _geometry = geometry;
     }
     void setupShaderProgram(ISShaderProgram* program) {
         std::vector<ShaderAttribute> attributeMap{
-            {0, "positionIn"},
-            {1, "jIn"},
-            {2, "NmjIn"}
+            {0, "jWrite"},
+            {1, "jRead"},
+            {2, "NmjRead"},
+            {3, "stjRead"}
         };
         program->loadShader(fragShader, vertShader, attributeMap);
         //TODO: create shader source string and load shader, use shader cache if possible
@@ -89,7 +94,6 @@ struct FSTPrecondition: public ISDrawable<ISSingleton, ISSingleton, FSTPrecondit
         _orthoMatrixUP = glGetUniformLocation(_program->program(), "orthoMatrix");
         _textureUP = glGetUniformLocation(_program->program(), "tex");
         _phaseTableUP = glGetUniformLocation(_program->program(), "phaseTable");
-        _isOrientationColUP = glGetUniformLocation(_program->program(), "isOrientationCol");
     }
     
 protected:

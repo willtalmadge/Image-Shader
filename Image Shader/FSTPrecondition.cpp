@@ -34,26 +34,22 @@ string FSTPrecondition::fragShader = SHADER_STRING
 
 string FSTPrecondition::vertShader = SHADER_STRING
 (
- attribute highp vec4 positionIn;
- attribute highp vec2 jIn;
- attribute highp vec2 NmjIn;
+ attribute highp vec4 jWrite;
+ attribute highp vec2 jRead;
+ attribute highp vec2 NmjRead;
+ attribute highp vec2 stjRead;
  
  uniform highp mat4 orthoMatrix;
- uniform bool isOrientationCol;
  varying highp vec2 j;
  varying highp vec2 Nmj;
  varying highp vec2 stj;
  
  void main()
 {
-	gl_Position = orthoMatrix*positionIn;
-	j = jIn;
-	Nmj = NmjIn;
-	if (isOrientationCol) {
-		stj = jIn;
-	} else {
-		stj.xy = jIn.yx;
-	}
+	gl_Position = orthoMatrix*jWrite;
+	j = jRead;
+	Nmj = NmjRead;
+	stj = stjRead;
 }
 
 );
