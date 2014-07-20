@@ -105,7 +105,7 @@ void readFBRow(GLuint width, GLuint y0)
 
 //    gaussianBlur<ISTexture>(pipeline, w, h, 5);
 //    rftInversionTestRowMajor1D<ISTexture>(pipeline, w, h);
-    fstInversionTestRowMajor1D(pipeline, w, h);
+    fstInversionTest2D(pipeline, w, h);
 //    readFBRow(w, h);
 //    pipeline.transform<ISComplex, ISSingleton>(selectRealDiscardComplex);
     pipeline.transform<ISSingleton, ISURe8Rgba, ISPassThroughDrawable, ISTexture>

@@ -54,7 +54,7 @@ std::function<void (ISComplex&, ISSingleton&)> fstFinalizeForward_Re16RgbaVFP4(G
                 fre16[iidx(i, 0)] = vcvt_f16_f32( vmulq_n_f32(fre, 0.5f) );
                 fim16[iidx(i, 0)] = vcvt_f16_f32(accum);
                 
-                for (size_t j = 0; j < N/2 - 1; j++) {
+                for (size_t j = 0; j < N/2; j++) {
                     fre = vcvt_f32_f16( fre16[iidx(i, j)] );
                     accum = vaddq_f32(accum, fre);
                     F16[oidx(i, 2*j)] = fim16[iidx(i, j)];
@@ -62,7 +62,6 @@ std::function<void (ISComplex&, ISSingleton&)> fstFinalizeForward_Re16RgbaVFP4(G
                 }
             }
         } else {
-            //FIXME: you are peaking into the buffer here, the logical coordinate system is no longer valid, the y-axis runs vertical, the transform might be running backwards when the direction is columns.
             for (size_t i = 0; i < width; i++) {
                 
                 float32x4_t fre = vcvt_f32_f16( fre16[iidx(0, i)] );
@@ -72,7 +71,7 @@ std::function<void (ISComplex&, ISSingleton&)> fstFinalizeForward_Re16RgbaVFP4(G
                 fre16[iidx(0, i)] = vcvt_f16_f32( vmulq_n_f32(fre, 0.5f) );
                 fim16[iidx(0, i)] = vcvt_f16_f32(accum);
                 
-                for (size_t j = 0; j < N/2 - 1; j++) {
+                for (size_t j = 0; j < N/2; j++) {
                     fre = vcvt_f32_f16( fre16[iidx(j, i)] );
                     accum = vaddq_f32(accum, fre);
                     F16[oidx(2*j, i)] = fim16[iidx(j, i)];
