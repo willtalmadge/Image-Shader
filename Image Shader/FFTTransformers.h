@@ -354,6 +354,7 @@ void rftInversionTestColMajor1D(ISPipeline& pipeline, GLuint w, GLuint h)
     butterflyAll(pipeline, w, h/2, FFTSubBlock::Orientation::Rows, -1, factors);
 }
 void fstInversionTestRowMajor1D(ISPipelineBufferable& pipeline, GLuint w, GLuint h);
+void fstInversionTestColMajor1D(ISPipelineBufferable& pipeline, GLuint w, GLuint h);
 void fstInversionTest2D(ISPipelineBufferable& pipeline, GLuint w, GLuint h);
 
 #endif /* defined(__Image_Shader__FFTTransformers__) */
