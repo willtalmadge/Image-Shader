@@ -78,13 +78,55 @@ void makeGlLookupColumnVarying(vector<GLfloat>& vec, GLuint length, GLuint x1, G
     for ( GLfloat attr : u2s) { vec.insert(vec.end(), {attr, 0.0}); }
     vec.insert(vec.end(), v3, v3+3);
     for ( GLfloat attr : u1s) { vec.insert(vec.end(), {attr, 1.0}); }
-    //Top triangle
+    //Bottom triangle
     vec.insert(vec.end(), v1, v1+3);
     for ( GLfloat attr : u2s) { vec.insert(vec.end(), {attr, 0.0}); }
     vec.insert(vec.end(), v2, v2+3);
     for ( GLfloat attr : u2s) { vec.insert(vec.end(), {attr, 1.0}); }
     vec.insert(vec.end(), v3, v3+3);
     for ( GLfloat attr : u1s) { vec.insert(vec.end(), {attr, 1.0}); }
+}
+void appendGlLookupCol(vector<GLfloat>& vec, GLuint length, GLuint x1, GLuint x2,
+                       const vector<GLfloat>& u1s,
+                       const vector<GLfloat>& u2s,
+                       const vector<GLfloat>& attr1,
+                       const vector<GLfloat>& attr2)
+{
+    //In the lookup geometry it is assumed all the attributes are u coords, they are paired with the appropriate v coords
+    assert(u1s.size() == u2s.size());
+    //assert(x2 > x1);
+    //Layout:
+    //x, y, z, {attributes}
+    float v0[] = {static_cast<float>(x1), 0.0, 0.5};//0
+    float v1[] = {static_cast<float>(x2), 0.0, 0.5};//1
+    float v2[] = {static_cast<float>(x2), static_cast<float>(length), 0.5};//2
+    float v3[] = {static_cast<float>(x1), static_cast<float>(length), 0.5};//3
+    
+    //Top triangle
+    vec.insert(vec.end(), v0, v0+3);
+    for ( GLfloat attr : u1s) { vec.insert(vec.end(), {attr, 0.0}); }
+    vec.insert(vec.end(), attr1.begin(), attr1.end());
+    
+    vec.insert(vec.end(), v1, v1+3);
+    for ( GLfloat attr : u2s) { vec.insert(vec.end(), {attr, 0.0}); }
+    vec.insert(vec.end(), attr2.begin(), attr2.end());
+    
+    vec.insert(vec.end(), v3, v3+3);
+    for ( GLfloat attr : u1s) { vec.insert(vec.end(), {attr, 1.0}); }
+    vec.insert(vec.end(), attr1.begin(), attr1.end());
+    
+    //Bottom triangle
+    vec.insert(vec.end(), v1, v1+3);
+    for ( GLfloat attr : u2s) { vec.insert(vec.end(), {attr, 0.0}); }
+    vec.insert(vec.end(), attr2.begin(), attr2.end());
+    
+    vec.insert(vec.end(), v2, v2+3);
+    for ( GLfloat attr : u2s) { vec.insert(vec.end(), {attr, 1.0}); }
+    vec.insert(vec.end(), attr2.begin(), attr2.end());
+    
+    vec.insert(vec.end(), v3, v3+3);
+    for ( GLfloat attr : u1s) { vec.insert(vec.end(), {attr, 1.0}); }
+    vec.insert(vec.end(), attr1.begin(), attr1.end());
 }
 void appendGlLookupRow(vector<GLfloat>& vec, GLuint length, GLuint y1, GLuint y2,
                        const vector<GLfloat>& v1s,
@@ -93,7 +135,7 @@ void appendGlLookupRow(vector<GLfloat>& vec, GLuint length, GLuint y1, GLuint y2
                        const vector<GLfloat> attr2)
 {
     assert(v1s.size() == v2s.size());
-    assert(y2 > y1);
+    //assert(y2 > y1);
     //Layout:
     //x, y, z, {attributes}
     float v0[] = {0.0, static_cast<float>(y1), 0.5};//0

@@ -82,7 +82,6 @@ struct ISDrawable : public IISDrawable {
         glUseProgram(_program->program());
         inputTuple->bind(static_cast<const DrawableT*>(this));
         bindUniforms(inputTuple, outputTuple);
-        //outputTuple->attach(); //pipeline now responsible for attaching, needed for multi-pass rendering
         _isBound = true;
     }
     void draw() {
@@ -195,6 +194,11 @@ std::vector<GLfloat> makeGlAttributePixelRow(GLuint length, GLuint y1, GLuint y2
 void makeGlLookupColumnVarying(std::vector<GLfloat>& vec, GLuint length, GLuint x1, GLuint x2,
                                const std::vector<GLfloat>& u1s,
                                const std::vector<GLfloat>& u2s);
+void appendGlLookupCol(std::vector<GLfloat>& vec, GLuint length, GLuint x1, GLuint x2,
+                       const std::vector<GLfloat>& u1s,
+                       const std::vector<GLfloat>& u2s,
+                       const std::vector<GLfloat>& attr1,
+                       const std::vector<GLfloat>& attr2);
 void appendGlLookupRow(std::vector<GLfloat>& vec, GLuint length, GLuint y1, GLuint y2,
                             const std::vector<GLfloat>& v1s,
                             const std::vector<GLfloat>& v2s,
