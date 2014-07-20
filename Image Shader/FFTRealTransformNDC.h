@@ -22,6 +22,8 @@
 #include "ISDrawable.h"
 #include "ISComplex.h"
 #include "ISSingleton.h"
+#include "ISTextureIndexing.h"
+
 //A drawable for converting an interleaved transform (treating evens as reals and
 //odds as imaginary in the FT) to an FT. Draws only to the first pixel column
 //where the DC and Nyquist components are stored.
@@ -35,11 +37,11 @@ struct FFTRealTransformNDC : public ISDrawable<ISComplex, ISSingleton, FFTRealTr
     using ISDrawableT = ISDrawable<ISComplex, ISSingleton, FFTRealTransformNDC>;
     
     enum class OutType { Real, Imag };
-    FFTRealTransformNDC(GLuint width, GLuint height, OutType outType, int direction) : ISDrawableT(width, height), _outType(outType), _orthoMatrixPosition(0) {
+    FFTRealTransformNDC(GLuint width, GLuint height, OutType outType, int sign, ISDirection direction) : ISDrawableT(width, height), _outType(outType), _orthoMatrixPosition(0), _direction(direction) {
         _orthoMatrix = GLKMatrix4MakeOrtho(0.0, _width, 0.0, _height, -1.0, 1.0);
-        if (direction == 1) {
+        if (sign == 1) {
             _multiplier = 1.0;
-        } else if (direction == -1) {
+        } else if (sign == -1) {
             _multiplier = 0.5;
         }
     }
@@ -62,23 +64,32 @@ struct FFTRealTransformNDC : public ISDrawable<ISComplex, ISSingleton, FFTRealTr
         } else if (_outType == OutType::Imag) {
             result = 1;
         }
+        if (_direction == ISDirection::Rows) {
+            result ^= 0;
+        } else {
+            result ^= 1;
+        }
         return result;
     };
     bool compareImpl(const FFTRealTransformNDC& rhs) const {
         bool result = true;
         result &= _outType == rhs._outType;
+        result &= _direction == rhs._direction;
         return result;
     };
     void drawImpl() { };
     void setupGeometry() {
         ISVertexArray* geometry = new ISVertexArray();
-        std::vector<GLfloat> vertices
-        (
-         makeGlAttributePixelColumn(_height, 0, 1,
-                                    {static_cast<GLfloat>(0.5/_width), 0.0},
-                                    {static_cast<GLfloat>(0.5/_width), 1.0})
-         );
-        
+        std::vector<GLfloat> vertices;
+        if (_direction == ISDirection::Rows) {
+            vertices = makeGlAttributePixelColumn(_height, 0, 1,
+                                                  {static_cast<GLfloat>(0.5/_width), 0.0f},
+                                                  {static_cast<GLfloat>(0.5/_width), 1.0f});
+        } else {
+            vertices = makeGlAttributePixelRow(_width, 0, 1,
+                                               {0.0f, static_cast<GLfloat>(0.5/_height)},
+                                               {1.0, static_cast<GLfloat>(0.5/_height)});
+        }
         geometry->addFloatAttribute(0, 3);
         geometry->addFloatAttribute(1, 2);
         
@@ -113,6 +124,8 @@ protected:
     GLKMatrix4 _orthoMatrix;
     OutType _outType;
     GLfloat _multiplier;
+    ISDirection _direction;
+    
     static const std::string fragShaderRe;
     static const std::string fragShaderIm;
     static const std::string vertShader;

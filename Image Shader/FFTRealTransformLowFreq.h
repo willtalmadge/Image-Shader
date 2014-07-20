@@ -24,7 +24,7 @@
 #include "ISComplex.h"
 #include "ISSingleton.h"
 #include "FFTPhaseTable.h"
-
+#include "ISTextureIndexing.h"
 
 struct FFTRealTransformLowFreq: public ISDrawable<ISComplex, ISSingleton, FFTRealTransformLowFreq>, ISComplexBindable {
     
@@ -32,9 +32,9 @@ struct FFTRealTransformLowFreq: public ISDrawable<ISComplex, ISSingleton, FFTRea
     
     enum class OutType { Real, Imag };
 
-    FFTRealTransformLowFreq(GLuint width, GLuint height, OutType outType, int direction) : ISDrawableT(width, height), _outType(outType), _orthoMatrixPosition(0) {
+    FFTRealTransformLowFreq(GLuint width, GLuint height, OutType outType, int sign, ISDirection direction) : ISDrawableT(width, height), _outType(outType), _orthoMatrixPosition(0), _direction(direction) {
         _orthoMatrix = GLKMatrix4MakeOrtho(0.0, _width, 0.0, _height, -1.0, 1.0);
-        _sign = -1*direction;
+        _sign = -1*sign;
     }
 
     GLuint realBindingTarget() const {
@@ -48,7 +48,12 @@ struct FFTRealTransformLowFreq: public ISDrawable<ISComplex, ISSingleton, FFTRea
     void bindUniforms(ISComplex* inputTuple, ISSingleton* outputTuple) {
         glUniformMatrix4fv(_orthoMatrixPosition, 1, false, _orthoMatrix.m);
         glUniform1f(_signUP, static_cast<GLfloat>(_sign));
-        ISTextureRef table = FFTPhaseTable::getPhaseTable(_width, 2*_width, -1*_sign);
+        ISTextureRef table = NULL;
+        if (_direction == ISDirection::Rows) {
+            table = FFTPhaseTable::getPhaseTable(_width, 2*_width, -1*_sign);
+        } else {
+            table = FFTPhaseTable::getPhaseTable(_height, 2*_height, -1*_sign);
+        }
         table->bindToShader(_phaseTableUP, inputTuple->textureUnitsUsed());
     }
 
@@ -59,32 +64,50 @@ struct FFTRealTransformLowFreq: public ISDrawable<ISComplex, ISSingleton, FFTRea
         } else if (_outType == OutType::Imag) {
             result = 1;
         }
+        if (_direction == ISDirection::Rows) {
+            result ^= 0;
+        } else {
+            result ^= 1;
+        }
         return result;
     };
     
     bool compareImpl(const FFTRealTransformLowFreq& rhs) const {
         bool result = true;
         result &= _outType == rhs._outType;
+        result &= _direction == rhs._direction;
         return result;
     };
     void drawImpl() { };
     void setupGeometry() {
         ISVertexArray* geometry = new ISVertexArray();
-        std::vector<GLfloat> vertices;
-        makeGlLookupColumnVarying(vertices, _height, 1, _width/2,
-                                  {1.0f/_width, 1.0f},
-                                  {0.5f, 0.5f + 1.0f/_width});
-        geometry->addFloatAttribute(0, 3);
-        geometry->addFloatAttribute(1, 2);
-        geometry->addFloatAttribute(2, 2);
-        geometry->upload(vertices);
+        ISTextureIndexer nWrite, nRead, N2mnRead, ptnRead;
+        
+        if (_direction == ISDirection::Rows) {
+            nWrite.writes().from(1).to(_width/2).alongRows(_width);
+            nRead.reads().from(1).to(_width/2).alongRows(_width);
+            N2mnRead.reads().from(1).to(_width/2).by(-1).offset(_width).alongRows(_width);
+            ptnRead.reads().from(1).to(_width/2).alongRows(_width);
+        } else {
+            nWrite.writes().from(1).to(_height/2).alongCols(_height);
+            nRead.reads().from(1).to(_height/2).alongCols(_height);
+            N2mnRead.reads().from(1).to(_height/2).by(-1).offset(_height).alongCols(_height);
+            ptnRead.reads().from(1).to(_height/2).alongRows(_height);
+        }
+
+        indexerGeometry(geometry, _width, _height, nWrite, {
+            nRead,
+            N2mnRead,
+            ptnRead
+        });
         _geometry = geometry;
     }
     void setupShaderProgram(ISShaderProgram* program) {
         std::vector<ShaderAttribute> attributeMap{
-            {0, "positionIn"},
-            {1, "nIn"},
-            {2, "N2mnIn"}
+            {0, "nWrite"},
+            {1, "nRead"},
+            {2, "N2mnRead"},
+            {3, "ptnRead"}
         };
         if (_outType == OutType::Real) {
             program->loadShader(fragShaderRe, vertShader, attributeMap);
@@ -111,6 +134,7 @@ protected:
     GLKMatrix4 _orthoMatrix;
     OutType _outType;
     GLint _sign;
+    ISDirection _direction;
     
     static const std::string fragShaderRe;
     static const std::string fragShaderIm;

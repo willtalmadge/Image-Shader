@@ -20,6 +20,7 @@ const std::string FFTRealTransformHighFreq::fragShaderRe = SHADER_STRING
 (
  varying highp vec2 n;
  varying highp vec2 N2mn;
+ varying highp vec2 ptn;
  
  uniform sampler2D inputRe;
  uniform sampler2D inputIm;
@@ -32,7 +33,7 @@ const std::string FFTRealTransformHighFreq::fragShaderRe = SHADER_STRING
     highp vec4 ren2 = texture2D(inputRe, N2mn);
     highp vec4 im = texture2D(inputIm, n);
     highp vec4 imn2 = texture2D(inputIm, N2mn);
-    highp vec4 p = texture2D(phaseTable, n);
+    highp vec4 p = texture2D(phaseTable, ptn);
     highp vec4 result;
     result.rgb = 0.5*(re.rgb + ren2.rgb + p.x*s*(im.rgb + imn2.rgb) + p.y*s*(re.rgb  - ren2.rgb));
     result.a = 1.0;
@@ -43,6 +44,7 @@ const std::string FFTRealTransformHighFreq::fragShaderIm = SHADER_STRING
 (
  varying highp vec2 n;
  varying highp vec2 N2mn;
+ varying highp vec2 ptn;
  
  uniform sampler2D inputRe;
  uniform sampler2D inputIm;
@@ -55,7 +57,7 @@ const std::string FFTRealTransformHighFreq::fragShaderIm = SHADER_STRING
     highp vec4 ren2 = texture2D(inputRe, N2mn);
     highp vec4 im = texture2D(inputIm, n);
     highp vec4 imn2 = texture2D(inputIm, N2mn);
-    highp vec4 p = texture2D(phaseTable, n);
+    highp vec4 p = texture2D(phaseTable, ptn);
     highp vec4 result;
     result.rgb = 0.5*(p.x*s*(re.rgb  - ren2.rgb) + imn2.rgb - im.rgb - p.y*s*(im.rgb + imn2.rgb));
     result.a = 1.0;
@@ -65,20 +67,23 @@ const std::string FFTRealTransformHighFreq::fragShaderIm = SHADER_STRING
 
 const std::string FFTRealTransformHighFreq::vertShader = SHADER_STRING
 (
- attribute vec4 positionIn;
- attribute vec2 nIn;
- attribute vec2 N2mnIn;
+ attribute vec4 nWrite;
+ attribute vec2 nRead;
+ attribute vec2 N2mnRead;
+ attribute vec2 ptnRead;
  
  varying vec2 n;
  varying vec2 N2mn;
+ varying vec2 ptn;
  
  uniform mat4 orthoMatrix;
  
  void main()
 {
-    gl_Position = orthoMatrix*positionIn;
-    n = nIn;
-    N2mn = N2mnIn;
+    gl_Position = orthoMatrix*nWrite;
+    n = nRead;
+    N2mn = N2mnRead;
+    ptn = ptnRead;
 }
  
  );
