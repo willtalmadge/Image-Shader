@@ -35,7 +35,7 @@ struct FFTPermute : public ISDrawable<ISSingleton, ISSingleton, FFTPermute>, ISS
     static const std::string vertShaderCols;
     
     using ISDrawableT = ISDrawable<ISSingleton, ISSingleton, FFTPermute>;
-    enum class Orientation { Rows, Cols };
+    enum class Orientation { Rows, Cols }; //Cols indicates that the signal spans across columns, if the orientation is Cols we are transforming rows. Consider changing this as it might be a confusing convention
     enum class Stride { SkipNone, SkipOne };
     enum class Offset { Zero, One };
     GLfloat stride() {
