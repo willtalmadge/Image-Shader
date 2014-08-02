@@ -39,8 +39,16 @@ void ISPipeline::teardown()
     _rootInitialized = false;
 }
 
-ISPipeline::ISPipeline(unique_ptr<ISTextureTuple> value) : _isRoot(false), _value(std::move(value)) { };
-ISPipeline::ISPipeline(ISTextureTuple* value) : _isRoot(false), _value(unique_ptr<ISTextureTuple>(value)) { };
+ISPipeline::ISPipeline(unique_ptr<ISTextureTuple> value) : _isRoot(false), _value(std::move(value)) {
+    assert(_value);
+    _targetSize = _value->size();
+    fullROI();
+};
+ISPipeline::ISPipeline(ISTextureTuple* value) : _isRoot(false), _value(unique_ptr<ISTextureTuple>(value)) {
+    assert(_value);
+    _targetSize = _value->size();
+    fullROI();
+};
 
 void ISPipeline::releaseAllCaches()
 {
@@ -56,4 +64,55 @@ ISPipeline::~ISPipeline()
         _rootInitialized = false;
     }
     _value.release(); //TODO: make sure this isn't causing any leaks
+}
+void ISPipeline::defaultROI() {
+    _sourceROI = _targetROI;
+}
+ISPipeline& ISPipeline::setTargetSize(uint width, uint height) {
+    _targetSize.width(width).height(height);
+    defaultROI();
+    return *this;
+}
+ISPipeline& ISPipeline::setTargetSize(ISSize size) {
+    _targetSize = size;
+    defaultROI();
+    return *this;
+}
+ISPipeline& ISPipeline::sourceToTargetSizeDiv(uint widthDiv, uint heightDiv) {
+    ISSize size = _sourceROI.size();
+    assert(size.width()%widthDiv == 0);
+    assert(size.height()%heightDiv == 0);
+    _targetSize.width(_sourceROI.size().width()/widthDiv)
+               .height(_sourceROI.size().height()/heightDiv);
+    _targetROI = ISRect(0, _targetSize.width(), 0, _targetSize.height());
+    return *this;
+}
+ISPipeline& ISPipeline::sourceToTargetSizeMult(uint widthMult, uint heightMult) {
+    //Multiplies source ROI dimensions and then sets the target ROI to use the whole target.
+    _targetSize.width(_sourceROI.size().width()*widthMult)
+               .height(_sourceROI.size().height()*heightMult);
+    _targetROI = ISRect(0, _targetSize.width(), 0, _targetSize.height());
+    return *this;
+}
+ISPipeline& ISPipeline::fromROI(ISRect roi) {
+    _sourceROI = roi;
+    return *this;
+}
+ISPipeline& ISPipeline::toROI(ISRect roi) {
+    _targetROI = roi;
+    return *this;
+}
+ISPipeline& ISPipeline::fullROI() {
+    _sourceROI = ISRect(_value->size());
+    _targetROI = ISRect(_targetSize);
+    return *this;
+}
+ISSize ISPipeline::targetSize() const {
+    return _targetSize;
+}
+ISRect ISPipeline::sourceROI() const {
+    return _sourceROI;
+}
+ISRect ISPipeline::targetROI() const {
+    return _targetROI;
 }

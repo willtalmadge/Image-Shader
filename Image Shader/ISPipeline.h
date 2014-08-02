@@ -25,6 +25,7 @@
 #include <memory>
 #include "ISTextureTuple.h"
 #include "ISSingleton.h"
+#include "ISRect.h"
 
 struct ISPipeline {
     //ISPipelines are stack allocated
@@ -38,32 +39,36 @@ struct ISPipeline {
     static void releaseAllCaches();
 
     template<class InputTupleT, class OutputTupleT>
-    void transform(std::function<void (InputTupleT&, OutputTupleT&)> transformer) {
+    void transform(std::function<void (InputTupleT&, OutputTupleT&, ISRect, ISRect)> transformer) {
         assert(_value);
         ISTextureTuple* ptr = _value.release();
         assert(ptr);
         assert(_rootInitialized);
         assert(static_cast<InputTupleT*>(ptr) == dynamic_cast<InputTupleT*>(ptr)); //Catch wrong tuple pointer
         OutputTupleT* output = new OutputTupleT;
-        transformer(static_cast<InputTupleT&>(*ptr), static_cast<OutputTupleT&>(*output));
+        transformer(static_cast<InputTupleT&>(*ptr), static_cast<OutputTupleT&>(*output), _sourceROI, _targetROI);
         //FIXME: create an assertion that output is well formed here.
         output->join(ptr);
+        
         _value = std::unique_ptr<ISTextureTuple>(output);
         if (_isRoot) {
             delete ptr; //Only safe to delete if the pipeline value has no chance of branching
         }
+        _targetSize = _value->size();
+        _sourceROI = ISSize(_targetSize);
+        _targetROI = _sourceROI;
     }
 
     template<class InputTupleT, template <class> class OutputTextureT, class DrawableT, class OutputTextureBaseT>
-    ISPipeline& transform(GLuint width, GLuint height, DrawableT&& drawable) {
+    ISPipeline& transform(DrawableT&& drawable) {
         assert(_rootInitialized);
         assert(_value);
         ISTextureTuple* ptr = _value.release();
         assert(ptr);
         assert(static_cast<InputTupleT*>(ptr) == dynamic_cast<InputTupleT*>(ptr)); //Your template arguments are wrong somewhere
         ISSingleton* output = new ISSingleton;
-        output->setup<OutputTextureT<OutputTextureBaseT> >(width, height);
-
+        output->setup<OutputTextureT<OutputTextureBaseT> >(_targetSize.width(), _targetSize.height());
+        drawable.setRenderMetrics(ptr->size(), _targetSize, _sourceROI, _targetROI); //TODO: if the drawable is loaded from the cache, is there a problem calling this?
         drawable.bind(static_cast<InputTupleT*>(ptr), output);
         output->attach();
         glClear(GL_COLOR_BUFFER_BIT);
@@ -75,6 +80,8 @@ struct ISPipeline {
             delete ptr;
         }
         drawable.cache();
+        _targetSize = _value->size();
+        defaultROI();
         return *this;
     }
     /////////////////
@@ -82,13 +89,13 @@ struct ISPipeline {
     /////////////////
 
     template<class InputTupleT, template <class> class OutputTextureT, class OutputTextureBaseT>
-    ISPipeline& multipassTransform(GLuint width, GLuint height, std::function<void (ISSingleton&, ISPipeline&)> transformer) {
+    ISPipeline& multipassTransform(std::function<void (ISSingleton&, ISPipeline&)> transformer) {
         
         assert(_rootInitialized);
         assert(_value);
         
         ISSingleton* output = new ISSingleton;
-        output->setup<OutputTextureT<OutputTextureBaseT> >(width, height);
+        output->setup<OutputTextureT<OutputTextureBaseT> >(_targetSize.width(), _targetSize.height());
         output->attach();
         glClear(GL_COLOR_BUFFER_BIT);
         transformer(static_cast<ISSingleton&>(*output), *this);
@@ -101,6 +108,8 @@ struct ISPipeline {
         if (_isRoot) {
             delete ptr; //Only safe to delete if the pipeline value has no chance of branching
         }
+        _targetSize = _value->size();
+        defaultROI();
         return *this;
     }
     template<class InputTupleT, class DrawableT>
@@ -111,11 +120,14 @@ struct ISPipeline {
         assert(inputPtr);
         assert(static_cast<InputTupleT*>(inputPtr) == dynamic_cast<InputTupleT*>(inputPtr)); //Your template arguments are wrong somewhere
         
+        drawable.setRenderMetrics(inputPtr->size(), _targetSize, _sourceROI, _targetROI);
         drawable.bind(static_cast<InputTupleT*>(inputPtr), &output);
         //Have to bind without reattaching, reattach requires a clear
         drawable.draw();
         _value.reset(inputPtr);
         drawable.cache();
+        _targetSize = _value->size();
+        defaultROI();
         return *this;
     }
     virtual void setupRoot();
@@ -132,9 +144,21 @@ struct ISPipeline {
     
     ISPipeline(std::unique_ptr<ISTextureTuple> value);
     ISPipeline(ISTextureTuple* value);
+
     ISPipeline(ISPipeline&& pipeline) : _isRoot(pipeline._isRoot), _value(std::move(pipeline._value)) { };
     virtual ~ISPipeline();
     static GLuint _framebufferName;
+    
+    virtual ISPipeline& setTargetSize(uint width, uint height);
+    virtual ISPipeline& setTargetSize(ISSize size);
+    virtual ISPipeline& sourceToTargetSizeDiv(uint widthDiv, uint heightDiv);
+    virtual ISPipeline& sourceToTargetSizeMult(uint widthMult, uint heightMult);
+    virtual ISPipeline& fullROI();
+    virtual ISPipeline& fromROI(ISRect roi);
+    virtual ISPipeline& toROI(ISRect roi);
+    ISSize targetSize() const;
+    ISRect sourceROI() const;
+    ISRect targetROI() const;
 protected:
     //ISPipeline should only be created on the stack
     static void * operator new(size_t);
@@ -142,8 +166,14 @@ protected:
     
     static bool _rootInitialized;
     
-    std::unique_ptr<ISTextureTuple> _value; //FIXME: should be a unique_ptr
+    std::unique_ptr<ISTextureTuple> _value;
     bool _isRoot;
+    
+    ISSize _targetSize; //Size of the texture attached to the framebuffer to be drawn to
+    ISRect _sourceROI;
+    ISRect _targetROI;
+    
+    void defaultROI();
 };
 #endif /* defined(__Image_Shader__ISPipeline__) */
 

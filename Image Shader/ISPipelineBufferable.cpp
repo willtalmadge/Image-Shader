@@ -18,3 +18,32 @@
 #include "ISPipelineBufferable.h"
 
 CVEAGLContext ISPipelineBufferable::_context = NULL;
+
+ISPipelineBufferable& ISPipelineBufferable::setTargetSize(uint width, uint height) {
+    ISPipeline::setTargetSize(width, height);
+    return *this;
+}
+ISPipelineBufferable& ISPipelineBufferable::setTargetSize(ISSize size) {
+    ISPipeline::setTargetSize(size);
+    return *this;
+}
+ISPipelineBufferable& ISPipelineBufferable::sourceToTargetSizeDiv(uint widthDiv, uint heightDiv) {
+    ISPipeline::sourceToTargetSizeDiv(widthDiv, heightDiv);
+    return *this;
+}
+ISPipelineBufferable& ISPipelineBufferable::sourceToTargetSizeMult(uint widthMult, uint heightMult) {
+    ISPipeline::sourceToTargetSizeMult(widthMult, heightMult);
+    return *this;
+}
+ISPipelineBufferable& ISPipelineBufferable::fromROI(ISRect roi) {
+    ISPipeline::fromROI(roi);
+    return *this;
+}
+ISPipelineBufferable& ISPipelineBufferable::toROI(ISRect roi) {
+    ISPipeline::toROI(roi);
+    return *this;
+}
+ISPipelineBufferable& ISPipelineBufferable::fullROI() {
+    ISPipeline::fullROI();
+    return *this;
+}
