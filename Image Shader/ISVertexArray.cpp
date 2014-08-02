@@ -89,7 +89,8 @@ void ISVertexArray::upload(const uchar* data, size_t length)
 void ISVertexArray::draw() const
 {
     assert(isSetup); //Did you forget to set _geometry in your setupGeometry() ?
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE){
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if (status == GL_FRAMEBUFFER_COMPLETE){
         glBindVertexArrayOES(vertexArray);
         glDrawArrays(drawType, 0, vertexCount);
         GLenum error = glGetError();
@@ -98,7 +99,7 @@ void ISVertexArray::draw() const
         }
     }
     else {
-        printf("GL_FRAMEBUFFER incomplete");
+        printf("GL_FRAMEBUFFER incomplete (%d)\n", status);
     }
 }
 
