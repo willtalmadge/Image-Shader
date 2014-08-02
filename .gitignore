@@ -16,3 +16,4 @@ DerivedData
 *.xcuserstate
 #Jetbrains AppCode
 .idea
+Pods
