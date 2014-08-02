@@ -81,13 +81,13 @@ ISTextureRef FFTPhaseTable::renderPhaseTable(GLuint sigSize, int sign)
 }
 ISTextureRef FFTPhaseTable::renderPhaseTable(GLuint sigSize, GLfloat period, int sign)
 {
-    
+    //TODO: make the texture 64 pixels high, but only use the first row
     GLuint framebuffer;
     glGenFramebuffers(1, &framebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     glClearColor(1.0, 0.0, 0.0, 1.0);
-    glViewport(0, 0, sigSize, 1);
-    ISTextureRef table = ISRe16Rgba<>::make(sigSize, 1);
+    glViewport(0, 0, sigSize, 64);
+    ISTextureRef table = ISRe16Rgba<>::make(sigSize, 64);
     table->attachToFramebuffer(framebuffer);
     ISShaderProgram tableProgram;
     tableProgram.loadShader(phaseTableFragSource, phaseTableVertSource, {
