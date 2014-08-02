@@ -70,8 +70,9 @@ void ISPBuffer::setup()
                             cvType,
                             attrs,
                             &_pBuffer);
-        
-        CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, ISPipelineBufferable::_context, NULL, &_textureCache);
+        assert(ISPipelineBufferable::_context); //Set the context before creating any textures
+        CVReturn status = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, ISPipelineBufferable::_context, NULL, &_textureCache);
+        assert(status == kCVReturnSuccess);
         CVOpenGLESTextureCacheCreateTextureFromImage (
                                                       kCFAllocatorDefault,
                                                       _textureCache,
@@ -116,7 +117,7 @@ size_t ISPBuffer::bytesPerRow() const
 }
 void ISPBuffer::bindBaseAddress() const
 {
-    glFinish();
+    
     if (kCVReturnSuccess == CVPixelBufferLockBaseAddress(_pBuffer, 0)) {
         _baseAddress = CVPixelBufferGetBaseAddress(_pBuffer);
         _bytesPerRow = CVPixelBufferGetBytesPerRow(_pBuffer);
