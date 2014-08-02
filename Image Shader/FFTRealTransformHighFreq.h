@@ -31,10 +31,10 @@ struct FFTRealTransformHighFreq: public ISDrawable<ISComplex, ISSingleton, FFTRe
     using ISDrawableT = ISDrawable<ISComplex, ISSingleton, FFTRealTransformHighFreq>;
     
     enum class OutType { Real, Imag };
-    FFTRealTransformHighFreq(GLuint width, GLuint height, OutType outType, int sign, ISDirection direction) : ISDrawableT(width, height), _outType(outType), _orthoMatrixPosition(0), _direction(direction) {
-        _orthoMatrix = GLKMatrix4MakeOrtho(0.0, _width, 0.0, _height, -1.0, 1.0);
+    FFTRealTransformHighFreq(OutType outType, int sign, ISDirection direction) : ISDrawableT(), _outType(outType), _direction(direction) {
         _sign = -1*sign;
     }
+    void init() { }
     GLuint realBindingTarget() const {
         assert(_isSetup);
         return _inputReUP;
@@ -45,13 +45,14 @@ struct FFTRealTransformHighFreq: public ISDrawable<ISComplex, ISSingleton, FFTRe
     }
     void bindUniforms(ISComplex* inputTuple, ISSingleton* outputTuple) {
         //TODO: set uniforms (not samplers, that is automatic)
-        glUniformMatrix4fv(_orthoMatrixPosition, 1, false, _orthoMatrix.m);
         glUniform1f(_signUP, static_cast<GLfloat>(_sign));
         ISTextureRef table = NULL;
+        uint width = _targetROI.width();
+        uint height = _targetROI.height();
         if (_direction == ISDirection::Rows) {
-            table = FFTPhaseTable::getPhaseTable(_width, 2*_width, -1*_sign);
-        } else {
-            table = FFTPhaseTable::getPhaseTable(_height, 2*_height, -1*_sign);
+            table = FFTPhaseTable::getPhaseTable(width, 2*width, -1*_sign);
+        } else if (_direction == ISDirection::Cols) {
+            table = FFTPhaseTable::getPhaseTable(height, 2*height, -1*_sign);
         }
         table->bindToShader(_phaseTableUP, inputTuple->textureUnitsUsed());
     }
@@ -64,7 +65,7 @@ struct FFTRealTransformHighFreq: public ISDrawable<ISComplex, ISSingleton, FFTRe
         }
         if (_direction == ISDirection::Rows) {
             result ^= 0;
-        } else {
+        } else if (_direction == ISDirection::Cols)  {
             result ^= 1;
         }
         return result;
@@ -78,23 +79,25 @@ struct FFTRealTransformHighFreq: public ISDrawable<ISComplex, ISSingleton, FFTRe
     };
     void drawImpl() { };
     void setupGeometry() {
+        uint width = _targetROI.width();
+        uint height = _targetROI.height();
         ISVertexArray* geometry = new ISVertexArray();
 
         ISTextureIndexer nWrite, nRead, N2mnRead, ptnRead;
         
         if (_direction == ISDirection::Rows) {
-            nWrite.writes().from(1).to(_width/2 + 1).by(-1).offset(_width).alongRows(_width);
-            nRead.reads().from(1).to(_width/2 + 1).alongRows(_width);
-            N2mnRead.reads().from(1).to(_width/2 + 1).by(-1).offset(_width).alongRows(_width);
-            ptnRead.reads().from(1).to(_width/2 + 1).alongRows(_width);
-        } else {
-            nWrite.writes().from(1).to(_height/2 + 1).by(-1).offset(_height).alongCols(_height);
-            nRead.reads().from(1).to(_height/2 + 1).alongCols(_height);
-            N2mnRead.reads().from(1).to(_height/2 + 1).by(-1).offset(_height).alongCols(_height);
-            ptnRead.reads().from(1).to(_height/2 + 1).alongRows(_height); //Phase table always a row
+            nWrite.writes().from(1).upTo(width/2 + 1).by(-1).offset(width).alongRows(width);
+            nRead.reads().from(1).upTo(width/2 + 1).alongRows(width);
+            N2mnRead.reads().from(1).upTo(width/2 + 1).by(-1).offset(width).alongRows(width);
+            ptnRead.reads().from(1).upTo(width/2 + 1).alongRows(width);
+        } else if (_direction == ISDirection::Cols) {
+            nWrite.writes().from(1).upTo(height/2 + 1).by(-1).offset(height).alongCols(height);
+            nRead.reads().from(1).upTo(height/2 + 1).alongCols(height);
+            N2mnRead.reads().from(1).upTo(height/2 + 1).by(-1).offset(height).alongCols(height);
+            ptnRead.reads().from(1).upTo(height/2 + 1).alongRows(height); //Phase table always a row
         }
         
-        indexerGeometry(geometry, _width, _height, nWrite, {
+        indexerGeometry(geometry, width, height, nWrite, {
             nRead,
             N2mnRead,
             ptnRead
@@ -110,13 +113,12 @@ struct FFTRealTransformHighFreq: public ISDrawable<ISComplex, ISSingleton, FFTRe
             {3, "ptnRead"}
         };
         if (_outType == OutType::Real) {
-            program->loadShader(fragShaderRe, vertShader, attributeMap);
+            program->loadShader(fragShaderRe, prependOrthoMatrixUniform(vertShader), attributeMap);
         } else if (_outType == OutType::Imag) {
-            program->loadShader(fragShaderIm, vertShader, attributeMap);
+            program->loadShader(fragShaderIm, prependOrthoMatrixUniform(vertShader), attributeMap);
         }
     }
     void resolveUniformPositions() {
-        _orthoMatrixPosition = glGetUniformLocation(_program->program(), "orthoMatrix");
         _inputReUP = glGetUniformLocation(_program->program(), "inputRe");
         _inputImUP = glGetUniformLocation(_program->program(), "inputIm");
         _phaseTableUP = glGetUniformLocation(_program->program(), "phaseTable");
@@ -128,10 +130,8 @@ protected:
     GLuint _inputReUP;
     GLuint _inputImUP;
     GLuint _phaseTableUP;
-    GLuint _orthoMatrixPosition;
     GLuint _signUP;
     
-    GLKMatrix4 _orthoMatrix;
     OutType _outType;
     GLint _sign;
     ISDirection _direction;

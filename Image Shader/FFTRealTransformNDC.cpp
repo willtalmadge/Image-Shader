@@ -59,8 +59,6 @@ const std::string FFTRealTransformNDC::vertShader = SHADER_STRING
  
  varying vec2 n;
  
- uniform mat4 orthoMatrix;
- 
  void main()
 {
     gl_Position = orthoMatrix*positionIn;

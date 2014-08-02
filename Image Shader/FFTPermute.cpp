@@ -38,15 +38,14 @@ const std::string FFTPermute::vertShaderCols = SHADER_STRING
  
  varying vec2 textureCoordinate;
  
- uniform mat4 orthoMatrix;
  uniform highp float stride;
  uniform highp float offset;
- uniform highp float targetSize;
+ uniform highp float sourceSize;
  
  void main()
  {
      gl_Position = orthoMatrix*positionIn;
-     highp float u = (stride*sourceIndexIn + offset + 0.5)/targetSize;
+     highp float u = (stride*sourceIndexIn + offset + 0.5)/sourceSize;
      textureCoordinate = vec2(u, texCoordVIn);
  }
  );
@@ -58,15 +57,14 @@ const std::string FFTPermute::vertShaderRows = SHADER_STRING
  
  varying vec2 textureCoordinate;
  
- uniform mat4 orthoMatrix;
  uniform highp float stride;
  uniform highp float offset;
- uniform highp float targetSize;
+ uniform highp float sourceSize;
  
  void main()
  {
      gl_Position = orthoMatrix*positionIn;
-     highp float u = (stride*sourceIndexIn + offset + 0.5)/targetSize;
+     highp float u = (stride*sourceIndexIn + offset + 0.5)/sourceSize;
      textureCoordinate = vec2(texCoordVIn,u);
  }
  );

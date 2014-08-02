@@ -76,8 +76,6 @@ const std::string FFTRealTransformHighFreq::vertShader = SHADER_STRING
  varying vec2 N2mn;
  varying vec2 ptn;
  
- uniform mat4 orthoMatrix;
- 
  void main()
 {
     gl_Position = orthoMatrix*nWrite;

@@ -128,7 +128,7 @@ void appendGlLookupCol(vector<GLfloat>& vec, GLuint length, GLuint x1, GLuint x2
     for ( GLfloat attr : u1s) { vec.insert(vec.end(), {attr, 1.0}); }
     vec.insert(vec.end(), attr1.begin(), attr1.end());
 }
-void appendGlLookupRow(vector<GLfloat>& vec, GLuint length, GLuint y1, GLuint y2,
+void appendGlLookupRow(vector<GLfloat>& vec, GLuint length, GLfloat textureLength, GLuint y1, GLuint y2,
                        const vector<GLfloat>& v1s,
                        const vector<GLfloat>& v2s,
                        const vector<GLfloat> attr1,
@@ -149,7 +149,7 @@ void appendGlLookupRow(vector<GLfloat>& vec, GLuint length, GLuint y1, GLuint y2
     vec.insert(vec.end(), attr1.begin(), attr1.end());
     
     vec.insert(vec.end(), v1, v1+3);
-    for ( GLfloat attr : v1s) { vec.insert(vec.end(), {1.0, attr}); }
+    for ( GLfloat attr : v1s) { vec.insert(vec.end(), {textureLength, attr}); }
     vec.insert(vec.end(), attr1.begin(), attr1.end());
     
     vec.insert(vec.end(), v3, v3+3);
@@ -157,11 +157,11 @@ void appendGlLookupRow(vector<GLfloat>& vec, GLuint length, GLuint y1, GLuint y2
     vec.insert(vec.end(), attr2.begin(), attr2.end());
     //Bottom triangle
     vec.insert(vec.end(), v1, v1+3);
-    for ( GLfloat attr : v1s) { vec.insert(vec.end(), {1.0, attr}); }
+    for ( GLfloat attr : v1s) { vec.insert(vec.end(), {textureLength, attr}); }
     vec.insert(vec.end(), attr1.begin(), attr1.end());
     
     vec.insert(vec.end(), v2, v2+3);
-    for ( GLfloat attr : v2s) { vec.insert(vec.end(), {1.0, attr}); }
+    for ( GLfloat attr : v2s) { vec.insert(vec.end(), {textureLength, attr}); }
     vec.insert(vec.end(), attr2.begin(), attr2.end());
     
     vec.insert(vec.end(), v3, v3+3);

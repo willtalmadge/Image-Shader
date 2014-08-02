@@ -37,14 +37,14 @@ struct FFTRealTransformNDC : public ISDrawable<ISComplex, ISSingleton, FFTRealTr
     using ISDrawableT = ISDrawable<ISComplex, ISSingleton, FFTRealTransformNDC>;
     
     enum class OutType { Real, Imag };
-    FFTRealTransformNDC(GLuint width, GLuint height, OutType outType, int sign, ISDirection direction) : ISDrawableT(width, height), _outType(outType), _orthoMatrixPosition(0), _direction(direction) {
-        _orthoMatrix = GLKMatrix4MakeOrtho(0.0, _width, 0.0, _height, -1.0, 1.0);
+    FFTRealTransformNDC(OutType outType, int sign, ISDirection direction) : ISDrawableT(), _outType(outType), _direction(direction) {
         if (sign == 1) {
             _multiplier = 1.0;
         } else if (sign == -1) {
             _multiplier = 0.5;
         }
     }
+    void init() { }
     GLuint realBindingTarget() const {
         assert(_isSetup);
         return _inputReUP;
@@ -54,7 +54,6 @@ struct FFTRealTransformNDC : public ISDrawable<ISComplex, ISSingleton, FFTRealTr
         return _inputImUP;
     }
     void bindUniforms(ISComplex* inputTuple, ISSingleton* outputTuple) {
-        glUniformMatrix4fv(_orthoMatrixPosition, 1, false, _orthoMatrix.m);
         glUniform1f(_multiplierUP, _multiplier);
     }
     size_t hashImpl() const {
@@ -66,7 +65,7 @@ struct FFTRealTransformNDC : public ISDrawable<ISComplex, ISSingleton, FFTRealTr
         }
         if (_direction == ISDirection::Rows) {
             result ^= 0;
-        } else {
+        } else if (_direction == ISDirection::Cols) {
             result ^= 1;
         }
         return result;
@@ -81,14 +80,16 @@ struct FFTRealTransformNDC : public ISDrawable<ISComplex, ISSingleton, FFTRealTr
     void setupGeometry() {
         ISVertexArray* geometry = new ISVertexArray();
         std::vector<GLfloat> vertices;
+        uint width = _targetROI.width();
+        uint height = _targetROI.height();
         if (_direction == ISDirection::Rows) {
-            vertices = makeGlAttributePixelColumn(_height, 0, 1,
-                                                  {static_cast<GLfloat>(0.5/_width), 0.0f},
-                                                  {static_cast<GLfloat>(0.5/_width), 1.0f});
-        } else {
-            vertices = makeGlAttributePixelRow(_width, 0, 1,
-                                               {0.0f, static_cast<GLfloat>(0.5/_height)},
-                                               {1.0, static_cast<GLfloat>(0.5/_height)});
+            vertices = makeGlAttributePixelColumn(height, 0, 1,
+                                                  {static_cast<GLfloat>(0.5/width), 0.0f},
+                                                  {static_cast<GLfloat>(0.5/width), 1.0f});
+        } else if (_direction == ISDirection::Cols) {
+            vertices = makeGlAttributePixelRow(width, 0, 1,
+                                               {0.0f, static_cast<GLfloat>(0.5/height)},
+                                               {1.0, static_cast<GLfloat>(0.5/height)});
         }
         geometry->addFloatAttribute(0, 3);
         geometry->addFloatAttribute(1, 2);
@@ -102,13 +103,12 @@ struct FFTRealTransformNDC : public ISDrawable<ISComplex, ISSingleton, FFTRealTr
             {1, "nIn"}
         };
         if (_outType == OutType::Real) {
-            program->loadShader(fragShaderRe, vertShader, attributeMap);
+            program->loadShader(fragShaderRe, prependOrthoMatrixUniform(vertShader), attributeMap);
         } else if (_outType == OutType::Imag) {
-            program->loadShader(fragShaderIm, vertShader, attributeMap);
+            program->loadShader(fragShaderIm, prependOrthoMatrixUniform(vertShader), attributeMap);
         }
     }
     void resolveUniformPositions() {
-        _orthoMatrixPosition = glGetUniformLocation(_program->program(), "orthoMatrix");
         _inputReUP = glGetUniformLocation(_program->program(), "inputRe");
         _inputImUP = glGetUniformLocation(_program->program(), "inputIm");
         _multiplierUP = glGetUniformLocation(_program->program(), "c");
@@ -116,12 +116,10 @@ struct FFTRealTransformNDC : public ISDrawable<ISComplex, ISSingleton, FFTRealTr
     
 protected:
     
-    GLuint _orthoMatrixPosition;
     GLuint _inputReUP;
     GLuint _inputImUP;
     GLuint _multiplierUP;
     
-    GLKMatrix4 _orthoMatrix;
     OutType _outType;
     GLfloat _multiplier;
     ISDirection _direction;

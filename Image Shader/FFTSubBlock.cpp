@@ -386,7 +386,6 @@ inline void inputTexLookupExp(ostringstream& s, int n) {
 string FFTSubBlock::vertShaderSource()
 {
     ostringstream s;
-    s << "uniform mat4 orthoMatrix;" << endl;
     s << "attribute highp vec4 positionIn;" << endl;
     repeatExp(inputAttributeExp, s, _butterflySize1);
     if (_isPhaseCorrecting) {

@@ -48,7 +48,6 @@ const std::string FFTGaussianFilter::vertShader = SHADER_STRING
  varying vec2 i;
  varying vec2 r;
  
- uniform mat4 orthoMatrix;
  void main()
 {
     i = iIn;

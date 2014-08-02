@@ -44,16 +44,16 @@ struct FFTSubBlock : public ISDrawable<ISComplex, ISSingleton, FFTSubBlock>, ISC
     }
     GLfloat size() {
         if (_orientation == Orientation::Cols) {
-            return _width;
+            return _targetROI.width();
         } else {
-            return _height;
+            return _targetROI.height();
         }
     }
     GLfloat length() {
         if (_orientation == Orientation::Rows) {
-            return _width;
+            return _targetROI.width();
         } else {
-            return _height;
+            return _targetROI.height();
         }
     }
     struct TexelSamplerRange {
@@ -87,11 +87,11 @@ struct FFTSubBlock : public ISDrawable<ISComplex, ISSingleton, FFTSubBlock>, ISC
     void releaseCache();
 #pragma mark - ISDrawable implementation
 
-    FFTSubBlock(GLuint width, GLuint height, Orientation orientation, GLuint butterflySize1, GLuint butterflySize2,
+    FFTSubBlock(Orientation orientation, GLuint butterflySize1, GLuint butterflySize2,
                 GLuint subBlockLength,
-                GLuint subBlockDigitOut, OutType outType, int sign) : ISDrawableT(width, height), _orientation(orientation), _orthoMatrixPosition(0), _butterflySize1(butterflySize1), _butterflySize2(butterflySize2), _subBlockLength(subBlockLength), _subBlockDigitOut(subBlockDigitOut), _sigSize(0), _outType(outType), _inputReUP(0), _inputImUP(0), _phaseCorrectTableUP(0), _isPhaseCorrecting(false), _sign(sign)
-    {
-        _orthoMatrix = GLKMatrix4MakeOrtho(0.0, _width, 0.0, _height, -1.0, 1.0);
+                GLuint subBlockDigitOut, OutType outType, int sign) : ISDrawableT(), _orientation(orientation), _butterflySize1(butterflySize1), _butterflySize2(butterflySize2), _subBlockLength(subBlockLength), _subBlockDigitOut(subBlockDigitOut), _sigSize(0), _outType(outType), _inputReUP(0), _inputImUP(0), _phaseCorrectTableUP(0), _isPhaseCorrecting(false), _sign(sign) { }
+    void init() {
+        assert(_targetROI.size() == _sourceROI.size());
         _sigSize = size();
         _isPhaseCorrecting = _subBlockLength*_butterflySize1 != _sigSize;
     }
@@ -104,7 +104,6 @@ struct FFTSubBlock : public ISDrawable<ISComplex, ISSingleton, FFTSubBlock>, ISC
         return _inputImUP;
     }
     void bindUniforms(ISComplex* inputTuple, ISSingleton* outputTuple) {
-        glUniformMatrix4fv(_orthoMatrixPosition, 1, false, _orthoMatrix.m);
         if (_isPhaseCorrecting) {
             bindPhaseTable(inputTuple->textureUnitsUsed());
         }
@@ -141,6 +140,8 @@ struct FFTSubBlock : public ISDrawable<ISComplex, ISSingleton, FFTSubBlock>, ISC
     void drawImpl() { };
     void setupGeometry() {
         ISVertexArray* geometry = new ISVertexArray();
+        //TODO: use ISTextureIndexer here, make sure ALL tests that touch an FFT are passed before using.
+        //TODO: this does not support ROI
         std::vector<GLfloat> vertices;
         
         std::vector<SubBlock> subBlockList = subBlocks();
@@ -168,13 +169,13 @@ struct FFTSubBlock : public ISDrawable<ISComplex, ISSingleton, FFTSubBlock>, ISC
                 makeGlLookupColumnVarying(vertices, length(), subBlockList[i].start, subBlockList[i].finish, coords1, coords2);
             } else {
                 if (_isPhaseCorrecting) {
-                    appendGlLookupRow(vertices, length(), subBlockList[i].start,
+                    appendGlLookupRow(vertices, length(), 1.0f, subBlockList[i].start,
                                       subBlockList[i].finish,
                                       coords1, coords2,
                                       {pcs[i].start/_sigSize, 0.5},
                                       {pcs[i].finish/_sigSize, 0.5});
                 } else {
-                    appendGlLookupRow(vertices, length(), subBlockList[i].start,
+                    appendGlLookupRow(vertices, length(), 1.0f, subBlockList[i].start,
                                       subBlockList[i].finish,
                                       coords1, coords2,
                                       {},
@@ -221,11 +222,11 @@ struct FFTSubBlock : public ISDrawable<ISComplex, ISSingleton, FFTSubBlock>, ISC
             if (_isPhaseCorrecting) {
                 attributeMap.push_back({offset, "phaseCorrectIn"});
             }
-            program->loadShader(fragShaderSource(), vertShaderSource(), attributeMap);
+            std::string vertShader = vertShaderSource();
+            program->loadShader(fragShaderSource(), prependOrthoMatrixUniform(vertShader), attributeMap);
         }
     }
     void resolveUniformPositions() {
-        _orthoMatrixPosition = glGetUniformLocation(_program->program(), "orthoMatrix");
         _inputReUP = glGetUniformLocation(_program->program(), "inputRe");
         _inputImUP = glGetUniformLocation(_program->program(), "inputIm");
         if (_isPhaseCorrecting) {
@@ -236,12 +237,10 @@ struct FFTSubBlock : public ISDrawable<ISComplex, ISSingleton, FFTSubBlock>, ISC
 protected:
     static std::unordered_map<int, ISTextureRef> _phaseTableCache;
     
-    GLuint _orthoMatrixPosition;
     GLuint _inputReUP;
     GLuint _inputImUP;
     GLuint _phaseCorrectTableUP;
     
-    GLKMatrix4 _orthoMatrix;
     OutType _outType;
     GLuint _butterflySize1; //R_{M-b}
     GLuint _butterflySize2; //R_{M-b-1}

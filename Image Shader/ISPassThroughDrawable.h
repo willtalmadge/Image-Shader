@@ -23,6 +23,7 @@
 #include "ISDrawable.h"
 #include "ISVertexArray.h"
 #include "ISSingleton.h"
+#include "ISTextureIndexing.h"
 #include <GLKit/GLKMatrix4.h>
 #include <string>
 #include "assert.h"
@@ -47,7 +48,6 @@ static const std::string vertShader = SHADER_STRING
  attribute vec4 texCoordIn;
  
  varying vec2 textureCoordinate;
- uniform mat4 orthoMatrix;
  
  void main()
 {
@@ -63,31 +63,35 @@ struct ISPassThroughDrawable : public ISDrawable<ISSingleton, ISSingleton, ISPas
     typedef ISSingleton InputType;
     using ISDrawableT = ISDrawable<ISSingleton, ISSingleton, ISPassThroughDrawable>;
     //TODO: orthomatrix uses drawable dimensions, viewport uses texture dimensions, resolve, which is appropriate?
-    ISPassThroughDrawable(GLuint width, GLuint height, GLfloat colorMultiplier = 1.0) : ISDrawableT(width, height), _orthoMatrixPosition(0), _colorMultiplier(colorMultiplier) {
-        _orthoMatrix = GLKMatrix4MakeOrtho(0.0, _width, 0.0, _height, -1.0, 1.0);
-    }
+    ISPassThroughDrawable(GLfloat colorMultiplier = 1.0) : ISDrawableT(), _colorMultiplier(colorMultiplier) { }
+    void init() { }
     GLuint textureBindingTarget() const {
         assert(_isSetup);
         return _textureUniformPosition;
     }
     void bindUniforms(ISSingleton* inputTuple, ISSingleton* outputTuple) {
-        glUniformMatrix4fv(_orthoMatrixPosition, 1, false, _orthoMatrix.m);
         glUniform1f(_colorMultiplierPosition, _colorMultiplier);
     }
     size_t hashImpl() const { return 0; }
     bool compareImpl(const ISPassThroughDrawable& rhs) const { return true; };
     void drawImpl() { };
     void setupGeometry() {
-        ISDrawableT::makeSimpleQuad(0, 1);
+        ISVertexArray* geometry = new ISVertexArray;
+        ISTextureIndexer xWrite, yWrite, xRead, yRead;
+        xWrite.writes().from(_targetROI.left()).upTo(_targetROI.right()).alongRows(_targetROI.width());
+        yWrite.writes().from(_targetROI.top()).upTo(_targetROI.bottom()).alongCols(_targetROI.height());
+        xRead.reads().from(_sourceROI.left()).upTo(_sourceROI.right()).alongRows(_sourceROI.width());
+        yRead.reads().from(_sourceROI.top()).upTo(_sourceROI.bottom()).alongCols(_sourceROI.height());
+        indexerGeometry2D(geometry, xWrite, yWrite, {xRead}, {yRead});
+        _geometry = geometry;
     }
     void setupShaderProgram(ISShaderProgram* program) {
-        program->loadShader(fragShader, vertShader, {
+        program->loadShader(fragShader, prependOrthoMatrixUniform(vertShader), {
             {0, "positionIn"},
             {1, "texCoordIn"}
         });
     }
     void resolveUniformPositions() {
-        _orthoMatrixPosition = glGetUniformLocation(_program->program(), "orthoMatrix");
         _colorMultiplierPosition = glGetUniformLocation(_program->program(), "colorMultiplier");
         _textureUniformPosition = glGetUniformLocation(_program->program(), "inputImageTexture");
     }
@@ -96,9 +100,7 @@ struct ISPassThroughDrawable : public ISDrawable<ISSingleton, ISSingleton, ISPas
 protected:
 
     GLuint _textureUniformPosition;
-    GLuint _orthoMatrixPosition;
     GLuint _colorMultiplierPosition;
-    GLKMatrix4 _orthoMatrix;
     GLfloat _colorMultiplier;
 };
 

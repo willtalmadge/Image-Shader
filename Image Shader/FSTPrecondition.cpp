@@ -1,10 +1,19 @@
-//
-//  FSTPrecondition.cpp
-//  Image Shader
-//
-//  Created by William Talmadge on 7/13/14.
-//  Copyright (c) 2014 William Talmadge. All rights reserved.
-//
+/*
+ Copyright (C) 2014  William B. Talmadge
+ 
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>
+ */
 
 #include "FSTPrecondition.h"
 
@@ -18,6 +27,7 @@ string FSTPrecondition::fragShader = SHADER_STRING
  
  uniform highp sampler2D tex;
  uniform highp sampler2D phaseTable;
+ uniform highp float scale;
  void main()
 {
 	highp float st = texture2D(phaseTable, stj).y;
@@ -28,7 +38,7 @@ string FSTPrecondition::fragShader = SHADER_STRING
 	result.rgb = st*(fj.rgb + fNmj.rgb) + 0.5*(fj.rgb - fNmj.rgb);
 	result.a = 1.0;
 	
-	gl_FragColor = result;
+	gl_FragColor = scale*result;
 }
 );
 
@@ -39,7 +49,6 @@ string FSTPrecondition::vertShader = SHADER_STRING
  attribute highp vec2 NmjRead;
  attribute highp vec2 stjRead;
  
- uniform highp mat4 orthoMatrix;
  varying highp vec2 j;
  varying highp vec2 Nmj;
  varying highp vec2 stj;

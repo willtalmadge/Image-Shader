@@ -27,17 +27,17 @@ struct FFTGaussianFilter : public ISDrawable<ISSingleton, ISSingleton, FFTGaussi
     
     using ISDrawableT = ISDrawable<ISSingleton, ISSingleton, FFTGaussianFilter>;
     
-    FFTGaussianFilter(GLuint width, GLuint height, GLfloat sigma) : ISDrawableT(width, height), _sigma(sigma),_orthoMatrixPosition(0) {
-        _orthoMatrix = GLKMatrix4MakeOrtho(0.0, _width, 0.0, _height, -1.0, 1.0);
-    }
+    FFTGaussianFilter(GLfloat sigma) : ISDrawableT(), _sigma(sigma) {}
+    void init() { }
     GLuint textureBindingTarget() const {
         assert(_isSetup);
         return _texUP;
     }
     void bindUniforms(ISSingleton* inputTuple, ISSingleton* outputTuple) {
-        glUniformMatrix4fv(_orthoMatrixPosition, 1, false, _orthoMatrix.m);
-        glUniform1f(_wSqUP, 4.0*_width*_width); //Assuming operating on a complex type
-        glUniform1f(_hSqUP, _height*_height);
+        uint width = _targetROI.width();
+        uint height = _targetROI.height();
+        glUniform1f(_wSqUP, 4.0*width*width); //Assuming operating on a complex type
+        glUniform1f(_hSqUP, height*height);
         glUniform1f(_varUP, _sigma*_sigma);
     }
     size_t hashImpl() const {
@@ -56,8 +56,8 @@ struct FFTGaussianFilter : public ISDrawable<ISSingleton, ISSingleton, FFTGaussi
     void setupGeometry() {
         ISVertexArray* geometry = new ISVertexArray();
         std::vector<GLfloat> vertices;
-        GLfloat w = _width/2.0;
-        GLfloat h = _height/2.0;
+        GLfloat w = _targetROI.width()/2.0;
+        GLfloat h = _targetROI.height()/2.0;
         GLfloat gQuadData[84] =
         {
             // Data layout for each line below is:
@@ -94,10 +94,9 @@ struct FFTGaussianFilter : public ISDrawable<ISSingleton, ISSingleton, FFTGaussi
             {1, "iIn"},
             {2, "rIn"}
         };
-        program->loadShader(fragShader, vertShader, attributeMap);
+        program->loadShader(fragShader, prependOrthoMatrixUniform(vertShader), attributeMap);
     }
     void resolveUniformPositions() {
-        _orthoMatrixPosition = glGetUniformLocation(_program->program(), "orthoMatrix");
         _texUP = glGetUniformLocation(_program->program(), "tex");
         _wSqUP = glGetUniformLocation(_program->program(), "wSq");
         _hSqUP = glGetUniformLocation(_program->program(), "hSq");
@@ -109,12 +108,10 @@ protected:
     static const std::string vertShader;
     
     GLuint _texUP;
-    GLuint _orthoMatrixPosition;
     GLuint _wSqUP;
     GLuint _hSqUP;
     GLuint _varUP;
     
-    GLKMatrix4 _orthoMatrix;
     GLfloat _sigma;
     
 };

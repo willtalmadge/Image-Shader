@@ -27,7 +27,7 @@
 #include "ISSingleton.h"
 #include <GLKit/GLKMatrix4.h>
 #include <string>
-
+#include "assert.h"
 
 struct FFTPermute : public ISDrawable<ISSingleton, ISSingleton, FFTPermute>, ISSingletonBindable {
     static const std::string fragShader;
@@ -54,37 +54,44 @@ struct FFTPermute : public ISDrawable<ISSingleton, ISSingleton, FFTPermute>, ISS
     }
     GLfloat size() {
         if (_orientation == Orientation::Cols) {
-            return _width;
+            return _targetROI.width();
         } else {
-            return _height;
+            return _targetROI.height();
         }
     }
     GLfloat length() {
         if (_orientation == Orientation::Rows) {
-            return _width;
+            return _targetROI.width();
         } else {
-            return _height;
+            return _targetROI.height();
         }
     }
     //TODO: abstract _orthoMatrix to base
-    FFTPermute(GLuint width, GLuint height, Stride stride, Offset offset, Orientation orientation, std::vector<GLuint> butterflyPlan) : ISDrawableT(width, height), _orthoMatrixPosition(0), _stride(stride), _offset(offset), _orientation(orientation), _butterflyPlan(butterflyPlan) {
-        _orthoMatrix = GLKMatrix4MakeOrtho(0.0, _width, 0.0, _height, -1.0, 1.0);
+    FFTPermute(Stride stride, Offset offset, Orientation orientation, std::vector<GLuint> butterflyPlan) : ISDrawableT(), _stride(stride), _offset(offset), _orientation(orientation), _butterflyPlan(butterflyPlan) {
+    }
+    void init() {
+        if (_orientation == Orientation::Cols) {
+            //FIXME: this can fire if the source data is a real signal with no factors of 2 in it.
+            assert(stride()*_targetROI.width() == _sourceROI.width());
+            assert(_targetROI.height() == _sourceROI.height());
+        } else if (_orientation == Orientation::Rows) {
+            assert(stride()*_targetROI.height() == _sourceROI.height());
+            assert(_targetROI.width() == _sourceROI.width());
+        }
     }
     GLuint textureBindingTarget() const {
         assert(_isSetup);
         return _textureUniformPosition;
     }
     void bindUniforms(ISSingleton* inputTuple, ISSingleton* outputTuple) {
-        if (_orientation == Orientation::Cols) {
-            //FIXME: this can fire if the source data is a real signal with no factors of 2 in it.
-            assert(inputTuple->getTexture()->width() == stride()*outputTuple->getTexture()->width());
-        } else if (_orientation == Orientation::Rows) {
-            assert(inputTuple->getTexture()->height() == stride()*outputTuple->getTexture()->height());
-        }
-        glUniformMatrix4fv(_orthoMatrixPosition, 1, false, _orthoMatrix.m);
         glUniform1f(_strideUP, stride());
         glUniform1f(_offsetUP, offset());
-        glUniform1f(_targetSizeUP, stride()*size()); 
+        if (_orientation == Orientation::Cols) {
+            glUniform1f(_sourceSizeUP, _sourceSize.width());
+        } else {
+            glUniform1f(_sourceSizeUP, _sourceSize.height());
+        }
+        
     }
     size_t hashImpl() const {
         size_t result;
@@ -157,17 +164,21 @@ struct FFTPermute : public ISDrawable<ISSingleton, ISSingleton, FFTPermute>, ISS
         std::vector<GLfloat> vertices;
         vertices.reserve(size()*5*6);
         if (_orientation == Orientation::Cols) {
+            float h = (float)length()/_sourceSize.height();
             for (GLuint i = 0; i < size(); i++) {
-                GLfloat source = static_cast<GLfloat>(permutationTable[i]);
+                GLfloat source = static_cast<GLfloat>(_sourceROI.left() + permutationTable[i]);
                 std::vector<GLfloat>
-                quad = makeGlAttributePixelColumn(length(), i, i+1,
-                                                  {0.0, source}, {1.0, source}); //This is a bit confusing but the vert shader actually may swap these depending on the orientation
+                quad = makeGlAttributePixelColumn(length(), _targetROI.left() + i, _targetROI.left() + i+1,
+                                                  {0.0, source},
+                                                  {h, source}); //This is a bit confusing but the vert shader actually may swap these depending on the orientation
                 vertices.insert(vertices.end(), quad.begin(), quad.end());
             }
-        } else {
+        } else if (_orientation == Orientation::Rows) {
+            float h = (float)length()/_sourceSize.width();
             for (GLuint i = 0; i < size(); i++) {
-                GLfloat source = static_cast<GLfloat>(permutationTable[i]);
-                appendGlLookupRow(vertices, length(), i, i+1, {source}, {source}, {}, {});
+                GLfloat source = static_cast<GLfloat>(_sourceROI.top() + permutationTable[i]);
+                appendGlLookupRow(vertices, length(), h, _targetROI.top() + i, _targetROI.top() + i+1,
+                                  {source}, {source}, {}, {});
             }
         }
         geometry->addFloatAttribute(0, 3);
@@ -183,29 +194,26 @@ struct FFTPermute : public ISDrawable<ISSingleton, ISSingleton, FFTPermute>, ISS
             {2, "sourceIndexIn"}
         };
         if (_orientation == Orientation::Cols) {
-            program->loadShader(fragShader, vertShaderCols, attributeMap);
+            program->loadShader(fragShader, prependOrthoMatrixUniform(vertShaderCols), attributeMap);
         } else {
-            program->loadShader(fragShader, vertShaderRows, attributeMap);
+            program->loadShader(fragShader, prependOrthoMatrixUniform(vertShaderRows), attributeMap);
         }
     }
     void resolveUniformPositions() {
-        _orthoMatrixPosition = glGetUniformLocation(_program->program(), "orthoMatrix");
         _textureUniformPosition = glGetUniformLocation(_program->program(), "inputImageTexture");
         _strideUP = glGetUniformLocation(_program->program(), "stride");
         _offsetUP = glGetUniformLocation(_program->program(), "offset");
-        _targetSizeUP = glGetUniformLocation(_program->program(), "targetSize");
+        _sourceSizeUP = glGetUniformLocation(_program->program(), "sourceSize");
     }
     
 protected:
     std::vector<GLuint> _butterflyPlan;
     
     GLuint _textureUniformPosition;
-    GLuint _orthoMatrixPosition;
     GLuint _strideUP;
     GLuint _offsetUP;
-    GLuint _targetSizeUP;
+    GLuint _sourceSizeUP;
     
-    GLKMatrix4 _orthoMatrix;
     Orientation _orientation;
     Stride _stride;
     Offset _offset;
