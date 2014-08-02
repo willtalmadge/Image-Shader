@@ -46,3 +46,8 @@ void ISSingleton::attach() const { //TODO: Express the fact that only singleton 
         glViewport(0, 0, getTexture()->width(), getTexture()->height());
     }
 }
+ISSize ISSingleton::size() const {
+    auto size = ISSize().width(getTexture()->width())
+                        .height(getTexture()->height());
+    return size;
+}

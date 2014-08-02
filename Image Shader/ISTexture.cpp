@@ -28,11 +28,18 @@ ISTexture::_texturePool = std::set<ISTextureRef, ISTexture::poolCompare>();
 
 void ISTexture::releasePool()
 {
+#ifdef DEBUG
+    uint count = 0;
+#endif
     for (ISTextureRef texture : _texturePool)
     {
         texture->deleteTexture();
         delete texture;
+#ifdef DEBUG
+        count++;
+#endif
     }
+    DLPRINT("Deleted %d textures\n", count);
 }
 bool ISTexture::poolCompare::operator()(ISTextureRef lhs, ISTextureRef rhs) const
 {

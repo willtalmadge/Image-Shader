@@ -38,6 +38,7 @@ struct ISComplex : ISTextureTuple {
     void setImag(ISTextureRef imag) { _elements[1] = imag; }
     void bind(const ISComplexBindable* drawable);
     GLuint textureUnitsUsed() const { return 2; };
+    ISSize size() const;
 };
 template<class T>
 void ISComplex::setup(GLuint width, GLuint height) {

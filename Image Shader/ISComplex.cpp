@@ -37,3 +37,8 @@ void ISComplex::bind(const ISComplexBindable* drawable) {
     real->bindToShader(drawable->realBindingTarget(), 0);
     imag->bindToShader(drawable->imagBindingTarget(), 1);
 }
+ISSize ISComplex::size() const {
+    auto size = ISSize().width(getReal()->width())
+                        .height(getReal()->height());
+    return size;
+}

@@ -40,6 +40,7 @@ struct ISSingleton : ISTextureTuple {
     void bind(const ISSingletonBindable* drawable) const;
     void attach() const;
     GLuint textureUnitsUsed() const { return 1; };
+    ISSize size() const;
 };
 
 #endif /* defined(__Image_Shader__ISSingleton__) */
