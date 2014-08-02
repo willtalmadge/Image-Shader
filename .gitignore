@@ -17,3 +17,4 @@ DerivedData
 #Jetbrains AppCode
 .idea
 Pods
+Podfile.lock
