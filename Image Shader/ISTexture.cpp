@@ -156,6 +156,33 @@ void ISTexture::recycle() const
     _texturePool.insert(this);
 #endif
 }
+void ISTexture::split(size_t n) const
+{
+    DLPRINT("Split string %zu\n", n);
+    _dangling += n;
+    _strings += n;
+    tryRecycle();
+}
+void ISTexture::glue() const
+{
+    DLPRINT("Glue string\n");
+    --_dangling;
+    tryRecycle();
+}
+void ISTexture::terminate() const
+{
+    DLPRINT("Terminate string\n");
+    --_strings;
+    tryRecycle();
+}
+void ISTexture::tryRecycle() const
+{
+    DLPRINT("%zu strings, %zu dangling %d\n", _strings, _dangling, name());
+    if (_dangling == 0 && _strings == 0) {
+        DLPRINT("Both reached 0, recycling\n");
+        recycle();
+    }
+}
 void ISTexture::deleteTexture() const
 {
     DLPRINT("Deleting texture %d\n", _name);

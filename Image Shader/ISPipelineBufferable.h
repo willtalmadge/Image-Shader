@@ -33,6 +33,7 @@ struct ISPipelineBufferable : public ISPipeline {
     ISPipelineBufferable& transformBuffer(std::function<void (InputTupleT&, OutputTupleT&, ISRect sourceROI, ISRect targetROI)> transformer) {
         assert(_value);
         ISTextureTuple* ptr = _value.release();
+        ptr->glue();
         assert(ptr);
         assert(static_cast<InputTupleT*>(ptr) == dynamic_cast<InputTupleT*>(ptr)); //Your template arguments are wrong somewhere
         ptr->map([] (ISTextureRef texture) {
@@ -48,13 +49,15 @@ struct ISPipelineBufferable : public ISPipeline {
         });
         glFinish(); //Rendering is not gauranteed to be finished when the base address is bound, if the buffer is accessed prematurely you'll be operating on a buffer actively being rendered to.
         transformer(static_cast<InputTupleT&>(*ptr), *output, _sourceROI, _targetROI);
+        
         ptr->map([] (ISTextureRef texture) {
             dynamic_cast<ISPBufferRef>(texture)->unbindBaseAddress();
         });
         output->map([] (ISTextureRef texture) {
             dynamic_cast<ISPBufferRef>(texture)->unbindBaseAddress();
         });
-        output->join(ptr);
+        ptr->terminate();
+        output->split(1);
         _value = std::unique_ptr<ISTextureTuple>(static_cast<ISTextureTuple*>(output));
         if (_isRoot) {
             delete ptr;

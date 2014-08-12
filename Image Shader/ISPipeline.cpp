@@ -41,6 +41,7 @@ void ISPipeline::teardown()
 
 ISPipeline::ISPipeline(unique_ptr<ISTextureTuple> value) : _isRoot(false), _value(std::move(value)) {
     assert(_value);
+    _value->split(1);
     _targetSize = _value->size();
     fullROI();
 };

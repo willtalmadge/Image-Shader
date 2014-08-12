@@ -33,6 +33,9 @@ struct ISTextureTuple {
     virtual ~ISTextureTuple();
     ISPipeline pipeline();
     void map(std::function<void (ISTextureRef)> f); //TODO: consider making this only accessible to ISPipeline
+    void split(size_t n);
+    void glue();
+    void terminate();
 //FIXME: restore protected:
     std::vector<ISTextureRef> _elements;
 };

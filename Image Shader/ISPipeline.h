@@ -46,9 +46,15 @@ struct ISPipeline {
         assert(_rootInitialized);
         assert(static_cast<InputTupleT*>(ptr) == dynamic_cast<InputTupleT*>(ptr)); //Catch wrong tuple pointer
         OutputTupleT* output = new OutputTupleT;
+        ptr->split(output->textureUnitsUsed() - 1);
         transformer(static_cast<InputTupleT&>(*ptr), static_cast<OutputTupleT&>(*output), _sourceROI, _targetROI);
-        //FIXME: create an assertion that output is well formed here.
-        output->join(ptr);
+        
+        ptr->map([](ISTextureRef tex) {
+            for(int i = 0; i < tex->dangling(); i++) {
+                tex->glue();
+                tex->terminate();
+            }
+        });
         
         _value = std::unique_ptr<ISTextureTuple>(output);
         if (_isRoot) {
@@ -64,6 +70,7 @@ struct ISPipeline {
         assert(_rootInitialized);
         assert(_value);
         ISTextureTuple* ptr = _value.release();
+        ptr->glue();
         assert(ptr);
         assert(static_cast<InputTupleT*>(ptr) == dynamic_cast<InputTupleT*>(ptr)); //Your template arguments are wrong somewhere
         ISSingleton* output = new ISSingleton;
@@ -74,7 +81,8 @@ struct ISPipeline {
         glClear(GL_COLOR_BUFFER_BIT);
         drawable.draw();
         
-        output->join(ptr);
+        ptr->terminate();
+        output->split(1);
         _value = std::unique_ptr<ISTextureTuple>(static_cast<ISTextureTuple*>(output));
         if (_isRoot) {
             delete ptr;
@@ -98,12 +106,15 @@ struct ISPipeline {
         output->setup<OutputTextureT<OutputTextureBaseT> >(_targetSize.width(), _targetSize.height());
         output->attach();
         glClear(GL_COLOR_BUFFER_BIT);
+        _value->glue();
         transformer(static_cast<ISSingleton&>(*output), *this);
-        
+
         ISTextureTuple* ptr = _value.release();
+        
         assert(ptr);
         assert(static_cast<InputTupleT*>(ptr) == dynamic_cast<InputTupleT*>(ptr)); //Catch wrong tuple pointer
-        //output->join(ptr);
+        ptr->terminate();
+        output->split(1);
         _value = std::unique_ptr<ISTextureTuple>(output);
         if (_isRoot) {
             delete ptr; //Only safe to delete if the pipeline value has no chance of branching

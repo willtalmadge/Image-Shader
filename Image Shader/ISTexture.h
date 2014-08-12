@@ -30,8 +30,8 @@ class ISSingleton;
 struct ISTexture {
     typedef const ISTexture* ISTextureRef;
     static void releasePool();
-    ISTexture(GLuint width, GLuint height) : _width(width), _height(height), _name(0), _isValid(false) { };
-    ISTexture(const ISTexture& texture) : _width(texture._width), _height(texture._height), _name(texture._name), _isValid(texture._isValid) { };
+    ISTexture(GLuint width, GLuint height) : _width(width), _height(height), _name(0), _isValid(false), _strings(0), _dangling(0) { };
+    ISTexture(const ISTexture& texture) : _width(texture._width), _height(texture._height), _name(texture._name), _isValid(texture._isValid), _strings(0), _dangling(0) { };
     virtual GLuint format() const = 0;
     virtual GLuint type() const = 0;
     
@@ -42,6 +42,10 @@ struct ISTexture {
     void ensureActiveTextureUnit(GLenum textureUnit) const;
     void bindToShader(GLuint shaderPosition, GLuint textureUnitOffset) const;
     void recycle() const;
+    void split(size_t n) const;
+    void glue() const;
+    void terminate() const;
+    size_t dangling() const { return _dangling; };
     virtual ~ISTexture();
     
     struct poolCompare {
@@ -69,12 +73,15 @@ struct ISTexture {
     }
     void swap(ISTexture& other) throw();
 protected:
+    void tryRecycle() const;
     static GLenum _activeTextureUnit;
     static std::set<ISTextureRef, poolCompare> _texturePool; //TODO: See below
     GLuint _width;
     GLuint _height;
     mutable GLuint _name;
     mutable GLuint _isValid;
+    mutable size_t _strings;
+    mutable size_t _dangling;
 };
 typedef ISTexture::ISTextureRef ISTextureRef;
 

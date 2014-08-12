@@ -58,6 +58,24 @@ void ISTextureTuple::map(std::function<void (ISTextureRef)> f)
         f(texture);
     }
 }
+void ISTextureTuple::split(size_t n)
+{
+    map([=](ISTextureRef tex) {
+        tex->split(n);
+    });
+}
+void ISTextureTuple::glue()
+{
+    map([](ISTextureRef tex) {
+        tex->glue();
+    });
+}
+void ISTextureTuple::terminate()
+{
+    map([](ISTextureRef tex) {
+        tex->terminate();
+    });
+}
 ISTextureTuple::~ISTextureTuple()
 {
 

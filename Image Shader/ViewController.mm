@@ -228,7 +228,10 @@ void read(ifstream& i, T* t) {
         output.setup(real);
     };
     
-    gaussianBlur<ISTexture>(pipeline, 5);
+    gaussianBlur<ISTexture>(pipeline, 50);
+    //std::vector<GLuint> factors = collectTwos(factorInteger(w/2));
+    //pipeline.transform<ISSingleton, ISComplex>
+    //(permuteEvenToRealAndOddToImag(FFTPermute::Orientation::Cols, factors));
 
     pipeline.transform<ISComplex, ISSingleton>(selectRealDiscardComplex);
     
